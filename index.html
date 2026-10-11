@@ -37,7 +37,7 @@
 
         <div class="login-brand-copy">
           <span class="login-kicker">Sistem Informasi Administrasi Guru</span>
-          <h1>Administrasi guru,<br><em>Desktop Full Version</em></h1>
+          <h1>Administrasi guru,<br><em>Full Version.</em></h1>
           <p>Absensi, jurnal, nilai, wali kelas, dan laporan dalam satu aplikasi yang ringan dan tetap bisa digunakan offline.</p>
         </div>
 
@@ -48,7 +48,7 @@
           <div><b>✓</b><span><strong>Siap PWA</strong><small>Bisa dipasang seperti aplikasi</small></span></div>
         </div>
 
-        <div class="login-brand-footer">SIAGA GURU Mobile 1.0 • Ruang kerja lokal</div>
+        <div class="login-brand-footer">SIAGA GURU Mobile 1.0.1.1.1 • Ruang kerja lokal</div>
       </section>
 
       <section class="login-form-panel">
@@ -169,7 +169,7 @@
       <div class="sidebar-footer">
         <div class="sidebar-workspace-state"><i></i><span>Ruang kerja lokal</span></div>
         <div class="free-badge">GRATIS • OFFLINE • TANPA IKLAN</div>
-        <small>SIAGA GURU Mobile 1.0</small>
+        <small>SIAGA GURU Mobile 1.0.1.1</small>
       </div>
     </aside>
 
@@ -213,7 +213,7 @@
           <button id="lockNowBtn" class="icon-btn hidden" title="Kunci aplikasi">🔒</button>
           <button id="themeBtn" class="icon-btn top-icon-btn" title="Ganti tema">◐</button>
           <button id="installBtn" class="btn btn-secondary install-cta hidden"><span>＋</span> Pasang Aplikasi</button>
-          <button id="aboutBtn" class="app-version-badge about-version-btn" type="button" title="Tentang SIAGA GURU">Mobile 1.0</button>
+          <button id="aboutBtn" class="app-version-badge about-version-btn" type="button" title="Tentang SIAGA GURU">Mobile 1.0.1</button>
         </div>
       </header>
 
@@ -1183,11 +1183,26 @@
     </main>
 
     <nav class="bottom-nav mobile-main-nav" aria-label="Navigasi utama mobile">
-      <button class="bottom-item active" data-page="dashboard"><span><img class="bottom-icon" src="assets/ui/home.png" alt=""></span><small>Beranda</small></button>
-      <button class="bottom-item" data-page="attendance"><span><img class="bottom-icon" src="assets/ui/attendance.png" alt=""></span><small>Absen</small></button>
-      <button class="bottom-item" data-page="journal"><span><img class="bottom-icon" src="assets/ui/journal.png" alt=""></span><small>Jurnal</small></button>
-      <button class="bottom-item" data-page="grades"><span><img class="bottom-icon" src="assets/ui/grades.png" alt=""></span><small>Nilai</small></button>
-      <button id="mobileMoreBtn" class="bottom-item mobile-more-btn" type="button"><span>☰</span><small>Menu</small></button>
+      <button class="bottom-item mobile-nav-home active" data-page="dashboard">
+        <span class="mobile-nav-icon"><img class="bottom-icon" src="assets/ui/home.png" alt=""></span>
+        <small>Beranda</small>
+      </button>
+      <button class="bottom-item mobile-nav-attendance" data-page="attendance">
+        <span class="mobile-nav-icon"><img class="bottom-icon" src="assets/ui/attendance.png" alt=""></span>
+        <small>Absen</small>
+      </button>
+      <button class="bottom-item mobile-nav-journal" data-page="journal">
+        <span class="mobile-nav-icon"><img class="bottom-icon" src="assets/ui/journal.png" alt=""></span>
+        <small>Jurnal</small>
+      </button>
+      <button class="bottom-item mobile-nav-grades" data-page="grades">
+        <span class="mobile-nav-icon"><img class="bottom-icon" src="assets/ui/grades.png" alt=""></span>
+        <small>Nilai</small>
+      </button>
+      <button id="mobileMoreBtn" class="bottom-item mobile-more-btn mobile-nav-more" type="button">
+        <span class="mobile-nav-icon"><img class="bottom-icon" src="assets/ui/settings.png" alt=""></span>
+        <small>Menu</small>
+      </button>
     </nav>
 
     <div id="mobileMoreBackdrop" class="mobile-more-backdrop hidden" aria-hidden="true"></div>
@@ -1584,7 +1599,7 @@
   <dialog id="helpDialog" class="dialog">
     <div class="dialog-card help-dialog-card">
       <div class="dialog-head">
-        <div><p class="muted">Pusat Bantuan</p><h3>SIAGA GURU Mobile 1.0</h3></div>
+        <div><p class="muted">Pusat Bantuan</p><h3>SIAGA GURU Mobile 1.0.1.1</h3></div>
         <button id="closeHelpBtn" class="icon-btn" aria-label="Tutup">×</button>
       </div>
       <div class="help-grid">
@@ -1601,12 +1616,12 @@
   <dialog id="aboutDialog" class="dialog">
     <div class="dialog-card about-dialog-card">
       <div class="dialog-head">
-        <div><p class="muted">Tentang Aplikasi</p><h3>SIAGA GURU Mobile 1.0</h3></div>
+        <div><p class="muted">Tentang Aplikasi</p><h3>SIAGA GURU Mobile 1.0.1.1</h3></div>
         <button id="closeAboutBtn" class="icon-btn" aria-label="Tutup">×</button>
       </div>
       <div class="about-hero">
         <img src="assets/icons/icon-192.png" alt="Logo SIAGA GURU">
-        <div><span>SIAGA GURU</span><strong>Administrasi guru, Desktop Full Version</strong><small>Mobile 1.0 • Core v3.9</small></div>
+        <div><span>SIAGA GURU</span><strong>Administrasi guru, Full Version.</strong><small>Mobile 1.0.1 • Core v3.9</small></div>
       </div>
       <div class="about-value-grid">
         <div><b>✓</b><span><strong>Gratis</strong><small>Tanpa biaya langganan.</small></span></div>
