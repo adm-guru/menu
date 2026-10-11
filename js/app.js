@@ -215,7 +215,20 @@ async function cloudQueueCount(){
 async function getCloudConfig(){
   const meta=await getAppMeta();
   const cfg=meta.cloudConfig||{};
-  return {mode:cfg.mode||'local',enabled:cfg.mode==='cloud',supabaseUrl:cfg.supabaseUrl||'',anonKey:cfg.anonKey||'',schoolCode:cfg.schoolCode||'',deviceId:cfg.deviceId||makeCloudId(),lastSyncAt:cfg.lastSyncAt||null,connectionState:cfg.connectionState||'idle'};
+  return {
+    mode:cfg.mode||'local',
+    enabled:cfg.mode==='cloud',
+    supabaseUrl:cfg.supabaseUrl||'',
+    anonKey:cfg.anonKey||'',
+    schoolCode:cfg.schoolCode||'',
+    deviceId:cfg.deviceId||makeCloudId(),
+    lastSyncAt:cfg.lastSyncAt||null,
+    connectionState:cfg.connectionState||'idle',
+    autoSync:cfg.autoSync!==false,
+    lastRemoteRevision:Number(cfg.lastRemoteRevision||0),
+    syncConflict:cfg.syncConflict||null,
+    lastAutoSyncAt:cfg.lastAutoSyncAt||null
+  };
 }
 async function saveCloudConfig(patch={}){
   const meta=await getAppMeta();
@@ -276,24 +289,34 @@ async function testCloudConnection(){
 async function renderCloudStatus(){
   const chip=document.getElementById('cloudSyncChip'); const badge=document.getElementById('cloudStatusBadge');
   if(!chip&&!badge) return;
-  let cfg; try{cfg=await getCloudConfig()}catch(_){cfg={mode:'local',deviceId:'',lastSyncAt:null,connectionState:'idle'}}
+  let cfg; try{cfg=await getCloudConfig()}catch(_){cfg={mode:'local',deviceId:'',lastSyncAt:null,connectionState:'idle',autoSync:true,syncConflict:null,lastRemoteRevision:0}}
   cloudRuntime={mode:cfg.mode,enabled:cfg.mode==='cloud',config:cfg,suppressQueue:false};
-  const isCloud=cfg.mode==='cloud';
-  chip?.classList.toggle('cloud',isCloud); chip?.classList.toggle('local',!isCloud);
-  badge?.classList.toggle('cloud',isCloud); badge?.classList.toggle('local',!isCloud);
+  const isCloud=cfg.mode==='cloud'; const hasConflict=Boolean(cfg.syncConflict);
+  chip?.classList.toggle('cloud',isCloud); chip?.classList.toggle('local',!isCloud); chip?.classList.toggle('conflict',hasConflict);
+  badge?.classList.toggle('cloud',isCloud); badge?.classList.toggle('local',!isCloud); badge?.classList.toggle('conflict',hasConflict);
   const chipLabel=document.getElementById('cloudSyncChipLabel'); const chipSub=document.getElementById('cloudSyncChipSub');
-  if(chipLabel) chipLabel.textContent=isCloud?'Cloud + Offline':'Lokal';
-  if(chipSub) chipSub.textContent=isCloud?(cfg.connectionState==='connected'?'Supabase siap':'Belum terhubung'):'Perangkat ini';
-  if(badge) badge.textContent=isCloud?'Cloud + Offline':'Mode Lokal';
+  if(chipLabel) chipLabel.textContent=hasConflict?'Perlu Pilihan':isCloud?'Cloud + Offline':'Lokal';
+  if(chipSub) chipSub.textContent=hasConflict?'Data berbeda':isCloud?(cfg.connectionState==='connected'?(cfg.autoSync?'Auto sync aktif':'Sync manual'):'Belum terhubung'):'Perangkat ini';
+  if(badge) badge.textContent=hasConflict?'Konflik Aman':isCloud?'Cloud + Offline':'Mode Lokal';
   document.getElementById('cloudConfigWrap')?.classList.toggle('hidden',!isCloud);
   document.querySelectorAll('[data-cloud-mode]').forEach(btn=>btn.classList.toggle('active',btn.dataset.cloudMode===cfg.mode));
   const pairs=[['cloudSupabaseUrl',cfg.supabaseUrl],['cloudSupabaseAnonKey',cfg.anonKey],['cloudSchoolCode',cfg.schoolCode],['cloudDeviceId',cfg.deviceId]];
   for(const [id,val] of pairs){const el=document.getElementById(id);if(el&&!el.matches(':focus')) el.value=val||''}
   const rs=document.getElementById('cloudRemoteState'); const rd=document.getElementById('cloudRemoteDetail');
-  if(rs) rs.textContent=!isCloud?'Belum aktif':cfg.connectionState==='connected'?'Terhubung':'Menunggu konfigurasi';
-  if(rd) rd.textContent=!isCloud?'Supabase belum dikonfigurasi':cfg.connectionState==='connected'?'Supabase REST terjangkau':'Isi Project URL dan key';
+  if(rs) rs.textContent=!isCloud?'Belum aktif':hasConflict?'Perlu pilihan':cfg.connectionState==='connected'?'Terhubung':'Menunggu konfigurasi';
+  if(rd) rd.textContent=!isCloud?'Supabase belum dikonfigurasi':hasConflict?'Perubahan PC dan HP sama-sama terdeteksi':cfg.connectionState==='connected'?(cfg.autoSync?'Sinkron otomatis siap':'Sinkron manual aktif'):'Isi Project URL dan key';
   try{const q=document.getElementById('cloudQueueCount');if(q)q.textContent=String(await cloudQueueCount())}catch(_){}
   const last=document.getElementById('cloudLastSync'); if(last) last.textContent=cfg.lastSyncAt?new Date(cfg.lastSyncAt).toLocaleString('id-ID'):'Belum pernah';
+
+  const auto=document.getElementById('cloudAutoSyncEnabled'); if(auto) auto.checked=Boolean(cfg.autoSync);
+  const autoState=document.getElementById('cloudAutoSyncState');
+  if(autoState) autoState.textContent=hasConflict?'Dijeda: perlu pilihan':!isCloud?'Aktifkan Cloud + Offline':!cfg.autoSync?'Sinkron otomatis dimatikan':navigator.onLine?'Aktif • cek ±90 detik':'Menunggu internet';
+  const conflictBox=document.getElementById('cloudConflictBox'); conflictBox?.classList.toggle('hidden',!hasConflict);
+  const conflictText=document.getElementById('cloudConflictText');
+  if(conflictText&&hasConflict){
+    const when=cfg.syncConflict.remoteUpdatedAt?new Date(cfg.syncConflict.remoteUpdatedAt).toLocaleString('id-ID'):'waktu tidak diketahui';
+    conflictText.textContent=`Cloud berubah dari perangkat lain (${when}), sementara perangkat ini juga memiliki perubahan. Pilih versi yang ingin dipertahankan.`;
+  }
 
   const session=getCloudSession();
   const authBadge=document.getElementById('cloudAuthBadge');
@@ -319,7 +342,7 @@ async function saveCloudSession(session){
   await authPut('users',activeLocalUser);
   await renderCloudStatus();
 }
-async function supabaseFetch(path,{method='GET',body=null,auth=True,prefer=''}={}){
+async function supabaseFetch(path,{method='GET',body=null,auth=True,prefer='',retryAuth=true}={}){
   const cfg=await getCloudConfig();
   const url=normalizeSupabaseUrl(cfg.supabaseUrl);
   if(!url||!cfg.anonKey) throw new Error('Konfigurasi Supabase belum lengkap.');
@@ -331,14 +354,26 @@ async function supabaseFetch(path,{method='GET',body=null,auth=True,prefer=''}={
   }else{headers.Authorization=`Bearer ${cfg.anonKey}`}
   if(prefer) headers.Prefer=prefer;
   const res=await fetch(`${url}${path}`,{method,headers,body:body==null?undefined:JSON.stringify(body)});
-  let data=null;
-  const text=await res.text();
+  let data=null; const text=await res.text();
   try{data=text?JSON.parse(text):null}catch(_){data=text}
   if(!res.ok){
+    if(res.status===401 && auth && retryAuth && getCloudSession()?.refresh_token){
+      await refreshCloudSession();
+      return supabaseFetch(path,{method,body,auth,prefer,retryAuth:false});
+    }
     const msg=data?.msg||data?.message||data?.error_description||data?.error||`HTTP ${res.status}`;
     const err=new Error(msg);err.status=res.status;throw err;
   }
   return data;
+}
+async function refreshCloudSession(){
+  const current=getCloudSession();
+  if(!current?.refresh_token) throw new Error('Sesi Cloud berakhir. Silakan login kembali.');
+  const data=await supabaseFetch('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:{refresh_token:current.refresh_token},auth:false,retryAuth:false});
+  if(!data?.access_token) throw new Error('Sesi Cloud tidak dapat diperbarui.');
+  const merged={...current,...data,user:data.user||current.user};
+  await saveCloudSession(merged);
+  return merged;
 }
 async function cloudSignUp(email,password){
   const data=await supabaseFetch('/auth/v1/signup',{method:'POST',body:{email,password},auth:false});
@@ -374,6 +409,14 @@ async function markAllCloudRecordsSynced(){
     }
   }finally{cloudRuntime.suppressQueue=false}
 }
+async function hasMeaningfulLocalWorkspace(){
+  const names=['students','attendance','journals','assessments','grades','homeroomNotes','teachingContexts'];
+  for(const name of names){
+    if(!db?.objectStoreNames.contains(name)) continue;
+    try{if((await idbGetAll(name)).length>0) return true}catch(_){}
+  }
+  return false;
+}
 async function cloudPushSnapshot(){
   const cfg=await getCloudConfig();
   const session=getCloudSession();
@@ -381,24 +424,19 @@ async function cloudPushSnapshot(){
   if(!session?.user?.id) throw new Error('Silakan login Cloud terlebih dahulu.');
   const snapshot=await collectWorkspaceSnapshot();
   const now=new Date().toISOString();
-  const payload=[{
-    user_id:session.user.id,
-    school_code:cfg.schoolCode||null,
-    device_id:cfg.deviceId||null,
-    data:snapshot,
-    updated_at:now
-  }];
+  const payload=[{user_id:session.user.id,school_code:cfg.schoolCode||null,device_id:cfg.deviceId||null,data:snapshot,updated_at:now}];
   const rows=await supabaseFetch('/rest/v1/workspace_snapshots?on_conflict=user_id',{method:'POST',body:payload,prefer:'resolution=merge-duplicates,return=representation'});
+  const row=rows?.[0]||null;
   await clearCloudQueue();
   await markAllCloudRecordsSynced();
-  await saveCloudConfig({lastSyncAt:now,connectionState:'connected'});
-  return rows?.[0]||null;
+  await saveCloudConfig({lastSyncAt:row?.updated_at||now,lastAutoSyncAt:new Date().toISOString(),lastRemoteRevision:Number(row?.revision||cfg.lastRemoteRevision+1||1),connectionState:'connected',syncConflict:null});
+  return row;
 }
 async function cloudGetSnapshot(){
   const session=getCloudSession();
   if(!session?.user?.id) throw new Error('Silakan login Cloud terlebih dahulu.');
   const userId=encodeURIComponent(session.user.id);
-  const rows=await supabaseFetch(`/rest/v1/workspace_snapshots?select=data,updated_at,device_id,school_code&user_id=eq.${userId}&limit=1`);
+  const rows=await supabaseFetch(`/rest/v1/workspace_snapshots?select=data,updated_at,device_id,school_code,revision&user_id=eq.${userId}&limit=1`);
   return Array.isArray(rows)?rows[0]||null:null;
 }
 async function cloudPullSnapshot(){
@@ -407,23 +445,70 @@ async function cloudPullSnapshot(){
   const cfg=await getCloudConfig();
   await applyWorkspaceSnapshot(remote.data,{preserveCloud:true});
   await clearCloudQueue();
-  await saveCloudConfig({lastSyncAt:remote.updated_at||new Date().toISOString(),connectionState:'connected',schoolCode:cfg.schoolCode||remote.school_code||''});
+  await markAllCloudRecordsSynced();
+  await saveCloudConfig({lastSyncAt:remote.updated_at||new Date().toISOString(),lastAutoSyncAt:new Date().toISOString(),lastRemoteRevision:Number(remote.revision||0),connectionState:'connected',schoolCode:cfg.schoolCode||remote.school_code||'',syncConflict:null});
   return remote;
 }
 async function cloudSmartSync(){
   const cfg=await getCloudConfig();
   if(cfg.mode!=='cloud') throw new Error('Mode Cloud + Offline belum aktif.');
   if(!getCloudSession()?.access_token) throw new Error('Silakan login Cloud terlebih dahulu.');
+  if(!navigator.onLine) throw new Error('Perangkat sedang offline. Data tetap aman di perangkat.');
   const pending=await cloudQueueCount();
   const remote=await cloudGetSnapshot();
-  if(pending>0 || !remote){
+  const meaningful=await hasMeaningfulLocalWorkspace();
+  if(!remote){
     await cloudPushSnapshot();
-    return pending>0?`${pending} perubahan dikirim ke Cloud.`:'Ruang kerja pertama berhasil dikirim ke Cloud.';
+    return 'Ruang kerja pertama berhasil dikirim ke Cloud.';
   }
-  await cloudPullSnapshot();
-  return 'Data terbaru berhasil diambil dari Cloud.';
-}
+  const remoteRevision=Number(remote.revision||0);
+  const lastRevision=Number(cfg.lastRemoteRevision||0);
+  const remoteNew=remoteRevision>lastRevision;
+  const fromOtherDevice=Boolean(remote.device_id && remote.device_id!==cfg.deviceId);
 
+  if(!meaningful && remote?.data){
+    await cloudPullSnapshot();
+    return 'Ruang kerja Cloud dipulihkan ke perangkat ini.';
+  }
+  if(pending>0 && remoteNew && fromOtherDevice){
+    const conflict={remoteRevision,remoteUpdatedAt:remote.updated_at||null,remoteDeviceId:remote.device_id||null,detectedAt:new Date().toISOString()};
+    await saveCloudConfig({syncConflict:conflict,connectionState:'connected'});
+    throw new Error('Perubahan ditemukan di PC dan HP. Sinkron otomatis dijeda agar data tidak tertimpa.');
+  }
+  if(pending>0){
+    await cloudPushSnapshot();
+    return `${pending} perubahan berhasil dikirim ke Cloud.`;
+  }
+  if(remoteNew){
+    await cloudPullSnapshot();
+    return 'Perubahan terbaru dari perangkat lain sudah diterapkan.';
+  }
+  await saveCloudConfig({lastAutoSyncAt:new Date().toISOString(),connectionState:'connected'});
+  return 'Data sudah sinkron.';
+}
+let cloudAutoSyncBusy=false;
+let cloudAutoSyncLastNotice='';
+async function cloudAutoSync(trigger='auto'){
+  if(cloudAutoSyncBusy || !activeLocalUser || !db || !navigator.onLine) return null;
+  let cfg; try{cfg=await getCloudConfig()}catch(_){return null}
+  if(cfg.mode!=='cloud' || !cfg.autoSync || cfg.syncConflict || !getCloudSession()?.access_token) return null;
+  cloudAutoSyncBusy=true;
+  try{
+    const message=await cloudSmartSync();
+    if(trigger!=='interval' && message && message!==cloudAutoSyncLastNotice){
+      cloudAutoSyncLastNotice=message;
+      if(!/Data sudah sinkron/.test(message)) showToast(message);
+    }
+    return message;
+  }catch(err){
+    console.warn('[SIAGA GURU Sync]',trigger,err);
+    if(/Perubahan ditemukan/.test(err.message||'')) showToast('Sinkron dijeda: perubahan ada di PC dan HP. Buka Pengaturan > Cloud.');
+    return null;
+  }finally{
+    cloudAutoSyncBusy=false;
+    try{await renderCloudStatus()}catch(_){}
+  }
+}
 
 
 function showToast(msg){
@@ -3204,6 +3289,7 @@ async function activateLocalUser(user,remember=false){
     .then(()=>runWorkspaceStep('Sinkron identitas akun',()=>syncActiveUserIdentityFromProfile()))
     .then(()=>runWorkspaceStep('Refresh akun aktif',()=>refreshMultiUserUI()))
     .then(async()=>{try{await maybeShowOnboarding()}catch(_){}})
+    .then(()=>runWorkspaceStep('Sinkron otomatis',()=>cloudAutoSync('workspace')))
     .catch(err=>{
       console.error('[SIAGA GURU] Sebagian ruang kerja gagal dimuat:',err);
       try{showToast('Aplikasi terbuka. Sebagian data sedang dimuat ulang.')}catch(_){}
@@ -3513,7 +3599,7 @@ document.getElementById('pullCloudBtn')?.addEventListener('click',async()=>{
 document.getElementById('cloudSignInBtn')?.addEventListener('click',async()=>{
   const email=document.getElementById('cloudAuthEmail').value.trim();
   const password=document.getElementById('cloudAuthPassword').value;
-  try{await cloudSignIn(email,password);showToast('Login Cloud berhasil');document.getElementById('cloudAuthPassword').value='';await renderCloudStatus()}
+  try{await cloudSignIn(email,password);showToast('Login Cloud berhasil');document.getElementById('cloudAuthPassword').value='';await renderCloudStatus();setTimeout(()=>cloudAutoSync('login'),450)}
   catch(err){showToast(err.message||'Login Cloud gagal')}
 });
 
@@ -3541,6 +3627,23 @@ document.getElementById('aboutBtn')?.addEventListener('click',()=>aboutDialog?.s
 document.getElementById('closeAboutBtn')?.addEventListener('click',()=>aboutDialog?.close());
 document.getElementById('aboutCloseActionBtn')?.addEventListener('click',()=>aboutDialog?.close());
 
+
+document.getElementById('cloudAutoSyncEnabled')?.addEventListener('change',async e=>{
+  try{
+    await saveCloudConfig({autoSync:Boolean(e.target.checked)});
+    showToast(e.target.checked?'Sinkron otomatis diaktifkan':'Sinkron otomatis dimatikan');
+    if(e.target.checked) setTimeout(()=>cloudAutoSync('enabled'),250);
+  }catch(err){showToast(err.message||'Gagal mengubah sinkron otomatis')}
+});
+document.getElementById('cloudConflictPullBtn')?.addEventListener('click',async()=>{
+  if(!confirm('Gunakan data Cloud dan ganti versi data pada perangkat ini?')) return;
+  try{await cloudPullSnapshot();showToast('Data Cloud dipakai. Sinkron otomatis aktif kembali.')}catch(err){showToast(err.message||'Gagal mengambil data Cloud')}
+});
+document.getElementById('cloudConflictPushBtn')?.addEventListener('click',async()=>{
+  if(!confirm('Gunakan data perangkat ini dan jadikan sebagai versi Cloud terbaru?')) return;
+  try{await cloudPushSnapshot();showToast('Data perangkat dikirim. Sinkron otomatis aktif kembali.')}catch(err){showToast(err.message||'Gagal mengirim data perangkat')}
+});
+
 document.getElementById('themeBtn')?.addEventListener('click',async()=>{
   if(!activeLocalUser)return;
   const resolved=resolveAppearanceMode(activeLocalUser.appearance||'dark');
@@ -3552,7 +3655,11 @@ function updateOnline(){
   const el=document.getElementById('onlineStatus');
   el.textContent=navigator.onLine?'Online':'Offline';
 }
-window.addEventListener('online',updateOnline); window.addEventListener('offline',updateOnline); updateOnline();
+window.addEventListener('online',()=>{updateOnline();setTimeout(()=>cloudAutoSync('online'),500)});
+window.addEventListener('offline',()=>{updateOnline();renderCloudStatus().catch(()=>{})});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible') setTimeout(()=>cloudAutoSync('resume'),500)});
+setInterval(()=>cloudAutoSync('interval'),90000);
+updateOnline();
 
 window.addEventListener('beforeinstallprompt',e=>{
   e.preventDefault();

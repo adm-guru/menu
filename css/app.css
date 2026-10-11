@@ -6812,3 +6812,36 @@ body{
 @media (display-mode: standalone){
   #installBtn{display:none!important}
 }
+
+
+/* ===================================================================
+   SIAGA GURU SYNC 1.0 — automatic cross-device sync & safe conflict UI
+   =================================================================== */
+.cloud-auto-sync-bar{
+  display:flex;align-items:center;gap:12px;
+  margin-top:14px;padding:13px 14px;
+  border-radius:16px;border:1px solid #dfe9f5;
+  background:linear-gradient(135deg,#f8fbff,#f3f9ff);
+}
+.cloud-auto-switch{flex:none!important;margin:0!important}
+.cloud-auto-sync-copy{min-width:0}
+.cloud-auto-sync-copy strong{display:block;color:#263b60;font-size:10px}
+.cloud-auto-sync-copy small{display:block;margin-top:3px;color:#7b8ca7;font-size:8.5px;line-height:1.45}
+.cloud-conflict-box{
+  display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:12px;
+  margin-top:12px;padding:14px;border-radius:17px;
+  background:#fff7e8;border:1px solid #efd8a9;
+}
+.cloud-conflict-icon{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:#ffe8b9;color:#9f6810;font-size:19px}
+.cloud-conflict-copy strong{display:block;color:#684715;font-size:10px}
+.cloud-conflict-copy small{display:block;margin-top:4px;color:#8a7045;font-size:8.5px;line-height:1.45}
+.cloud-conflict-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.cloud-sync-chip.conflict{border-color:#ebcb8d!important;background:#fff8e9!important}
+.cloud-sync-chip.conflict .cloud-sync-dot{background:#e9a526!important;box-shadow:0 0 0 4px rgba(233,165,38,.12)!important}
+.cloud-status-badge.conflict{color:#98650d!important;background:#fff7e7!important;border-color:#efd59d!important}
+@media(max-width:760px){
+  .cloud-auto-sync-bar{align-items:flex-start}
+  .cloud-conflict-box{grid-template-columns:40px 1fr}
+  .cloud-conflict-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;width:100%}
+  .cloud-conflict-actions .btn{width:100%;padding-left:8px;padding-right:8px;font-size:8px}
+}

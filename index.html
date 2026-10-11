@@ -37,7 +37,7 @@
 
         <div class="login-brand-copy">
           <span class="login-kicker">Sistem Informasi Administrasi Guru</span>
-          <h1>Administrasi guru,<br><em>lebih tenang.</em></h1>
+          <h1>Administrasi guru,<br><em>Full Version.</em></h1>
           <p>Absensi, jurnal, nilai, wali kelas, dan laporan dalam satu aplikasi yang ringan dan tetap bisa digunakan offline.</p>
         </div>
 
@@ -48,7 +48,7 @@
           <div><b>✓</b><span><strong>Siap PWA</strong><small>Bisa dipasang seperti aplikasi</small></span></div>
         </div>
 
-        <div class="login-brand-footer">SIAGA GURU Mobile 1.0.2.1.1 • Ruang kerja lokal</div>
+        <div class="login-brand-footer">SIAGA GURU Mobile 1.1.1.1 • Ruang kerja lokal</div>
       </section>
 
       <section class="login-form-panel">
@@ -168,8 +168,8 @@
 
       <div class="sidebar-footer">
         <div class="sidebar-workspace-state"><i></i><span>Ruang kerja lokal</span></div>
-        <div class="free-badge">GRATIS • OFFLINE • TANPA IKLAN</div>
-        <small>SIAGA GURU Mobile 1.0.2.1</small>
+        <div class="free-badge">Developer By Guru Lampung Timur</div>
+        <small>SIAGA GURU Mobile 1.1.1</small>
       </div>
     </aside>
 
@@ -213,7 +213,7 @@
           <button id="lockNowBtn" class="icon-btn hidden" title="Kunci aplikasi">🔒</button>
           <button id="themeBtn" class="icon-btn top-icon-btn" title="Ganti tema">◐</button>
           <button id="installBtn" class="btn btn-secondary install-cta hidden"><span>＋</span> Pasang Aplikasi</button>
-          <button id="aboutBtn" class="app-version-badge about-version-btn" type="button" title="Tentang SIAGA GURU">Mobile 1.0.2</button>
+          <button id="aboutBtn" class="app-version-badge about-version-btn" type="button" title="Tentang SIAGA GURU">Mobile 1.1</button>
         </div>
       </header>
 
@@ -709,6 +709,29 @@
               <button id="pushCloudBtn" class="btn btn-secondary" type="button">Kirim ke Cloud</button>
               <button id="pullCloudBtn" class="btn btn-secondary" type="button">Ambil dari Cloud</button>
             </div>
+
+            <div class="cloud-auto-sync-bar">
+              <label class="switch-line cloud-auto-switch">
+                <input id="cloudAutoSyncEnabled" type="checkbox" checked>
+                <span>Sinkron otomatis</span>
+              </label>
+              <div class="cloud-auto-sync-copy">
+                <strong id="cloudAutoSyncState">Menunggu konfigurasi</strong>
+                <small>Memeriksa perubahan saat aplikasi dibuka, kembali online, dan secara berkala.</small>
+              </div>
+            </div>
+
+            <div id="cloudConflictBox" class="cloud-conflict-box hidden">
+              <div class="cloud-conflict-icon">⚠</div>
+              <div class="cloud-conflict-copy">
+                <strong>Perubahan ditemukan di dua perangkat</strong>
+                <small id="cloudConflictText">SIAGA GURU tidak akan menimpa data otomatis. Pilih versi yang ingin digunakan.</small>
+              </div>
+              <div class="cloud-conflict-actions">
+                <button id="cloudConflictPullBtn" class="btn btn-secondary" type="button">Gunakan Data Cloud</button>
+                <button id="cloudConflictPushBtn" class="btn btn-primary" type="button">Gunakan Data Perangkat</button>
+              </div>
+            </div>
           </div>
           <div class="cloud-status-grid">
             <div class="cloud-status-card"><span>Perangkat</span><strong id="cloudDeviceState">Siap Offline</strong><small>IndexedDB lokal</small></div>
@@ -716,7 +739,7 @@
             <div class="cloud-status-card"><span>Antrean</span><strong id="cloudQueueCount">0</strong><small>Perubahan menunggu sinkronisasi</small></div>
             <div class="cloud-status-card"><span>Sinkronisasi Terakhir</span><strong id="cloudLastSync">Belum pernah</strong><small>Status ruang kerja aktif</small></div>
           </div>
-          <div class="cloud-phase-note"><span class="cloud-phase-pill">SYNC v1</span><p>v3.7 dapat login melalui Supabase Auth dan menyinkronkan <strong>snapshot ruang kerja guru</strong> antar-perangkat. Jika dua perangkat mengubah data bersamaan, gunakan tombol Kirim/Ambil Cloud untuk menentukan versi yang dipakai.</p></div>
+          <div class="cloud-phase-note"><span class="cloud-phase-pill">SYNC 1.0</span><p>Sinkron otomatis aktif saat Cloud + Offline digunakan. Jika PC dan HP sama-sama berubah sebelum tersinkron, SIAGA GURU menghentikan sinkron otomatis dan meminta Bapak/Ibu memilih versi data agar tidak tertimpa diam-diam.</p></div>
         </article>
 
         <article class="panel academic-period-panel">
@@ -1599,7 +1622,7 @@
   <dialog id="helpDialog" class="dialog">
     <div class="dialog-card help-dialog-card">
       <div class="dialog-head">
-        <div><p class="muted">Pusat Bantuan</p><h3>SIAGA GURU Mobile 1.0.2.1</h3></div>
+        <div><p class="muted">Pusat Bantuan</p><h3>SIAGA GURU Mobile 1.1.1</h3></div>
         <button id="closeHelpBtn" class="icon-btn" aria-label="Tutup">×</button>
       </div>
       <div class="help-grid">
@@ -1616,12 +1639,12 @@
   <dialog id="aboutDialog" class="dialog">
     <div class="dialog-card about-dialog-card">
       <div class="dialog-head">
-        <div><p class="muted">Tentang Aplikasi</p><h3>SIAGA GURU Mobile 1.0.2.1</h3></div>
+        <div><p class="muted">Tentang Aplikasi</p><h3>SIAGA GURU Mobile 1.1.1</h3></div>
         <button id="closeAboutBtn" class="icon-btn" aria-label="Tutup">×</button>
       </div>
       <div class="about-hero">
         <img src="assets/icons/icon-192.png" alt="Logo SIAGA GURU">
-        <div><span>SIAGA GURU</span><strong>Administrasi guru, lebih tenang.</strong><small>Mobile 1.0.2 • Core v3.9</small></div>
+        <div><span>SIAGA GURU</span><strong>Administrasi guru, Full Version.</strong><small>Mobile 1.1 • Core v3.9</small></div>
       </div>
       <div class="about-value-grid">
         <div><b>✓</b><span><strong>Gratis</strong><small>Tanpa biaya langganan.</small></span></div>
