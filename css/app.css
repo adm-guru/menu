@@ -6644,3 +6644,171 @@ body{
     }
   }
 }
+
+
+/* ===================================================================
+   SIAGA GURU MOBILE 1.0.2 — CONTRAST & COLOR FIX
+   =================================================================== */
+@media (max-width:899px){
+
+  /* ---------------------------------------------------------------
+     HERO — paksa teks tetap terang di atas gradien biru.
+     Override ini sengaja diletakkan paling akhir untuk mengalahkan
+     aturan legacy Desktop light-theme.
+     --------------------------------------------------------------- */
+  :root[data-appearance="light"] #dashboard .hero-v33,
+  :root.light #dashboard .hero-v33{
+    color:#ffffff!important;
+  }
+
+  :root[data-appearance="light"] #dashboard .hero-v33 h2,
+  :root.light #dashboard .hero-v33 h2,
+  :root[data-appearance="light"] #dashboard .hero-v33 .hero-school-meta strong,
+  :root.light #dashboard .hero-v33 .hero-school-meta strong{
+    color:#ffffff!important;
+    opacity:1!important;
+    text-shadow:0 1px 2px rgba(9,51,127,.10);
+  }
+
+  :root[data-appearance="light"] #dashboard .hero-v33 p,
+  :root.light #dashboard .hero-v33 p{
+    color:rgba(255,255,255,.92)!important;
+    opacity:1!important;
+  }
+
+  :root[data-appearance="light"] #dashboard .hero-v33 .hero-meta-label,
+  :root.light #dashboard .hero-v33 .hero-meta-label{
+    color:rgba(255,255,255,.86)!important;
+    opacity:1!important;
+  }
+
+  :root[data-appearance="light"] #dashboard .hero-v33 .hero-feature-chips span,
+  :root.light #dashboard .hero-v33 .hero-feature-chips span{
+    color:#ffffff!important;
+    background:rgba(255,255,255,.14)!important;
+    border-color:rgba(255,255,255,.24)!important;
+    opacity:1!important;
+    backdrop-filter:blur(5px);
+  }
+
+  :root[data-appearance="light"] #dashboard .hero-v33 .hero-actions .btn-primary,
+  :root.light #dashboard .hero-v33 .hero-actions .btn-primary{
+    color:#ffffff!important;
+    background:linear-gradient(135deg,#1768f4,#27b7ff)!important;
+    border:1px solid rgba(255,255,255,.22)!important;
+  }
+
+  :root[data-appearance="light"] #dashboard .hero-v33 .hero-actions .btn-secondary,
+  :root.light #dashboard .hero-v33 .hero-actions .btn-secondary{
+    color:#203354!important;
+    background:#ffffff!important;
+    border-color:rgba(255,255,255,.72)!important;
+  }
+
+  /* Hero sedikit lebih rapat supaya konten setelahnya cepat terlihat */
+  #dashboard .hero-v33-copy{
+    padding-bottom:13px!important;
+  }
+  #dashboard .hero-v33-visual{
+    padding-top:0!important;
+  }
+  #dashboard .campus-scene{
+    height:172px!important;
+  }
+
+  /* ---------------------------------------------------------------
+     BOTTOM NAV — gunakan warna langsung per item.
+     Tidak lagi bergantung pada inheritance CSS variables agar konsisten
+     di Chrome/WebView Android yang berbeda.
+     --------------------------------------------------------------- */
+  .mobile-main-nav > .mobile-nav-home .mobile-nav-icon{
+    background:linear-gradient(145deg,#2f75f5,#45b6ff)!important;
+    box-shadow:0 8px 18px rgba(47,117,245,.24)!important;
+  }
+  .mobile-main-nav > .mobile-nav-attendance .mobile-nav-icon{
+    background:linear-gradient(145deg,#10a96f,#48d79f)!important;
+    box-shadow:0 8px 18px rgba(16,169,111,.23)!important;
+  }
+  .mobile-main-nav > .mobile-nav-journal .mobile-nav-icon{
+    background:linear-gradient(145deg,#7546de,#a967ff)!important;
+    box-shadow:0 8px 18px rgba(117,70,222,.23)!important;
+  }
+  .mobile-main-nav > .mobile-nav-grades .mobile-nav-icon{
+    background:linear-gradient(145deg,#ed9e15,#ffc555)!important;
+    box-shadow:0 8px 18px rgba(237,158,21,.24)!important;
+  }
+  .mobile-main-nav > .mobile-nav-more .mobile-nav-icon{
+    background:linear-gradient(145deg,#334d6b,#6f87a1)!important;
+    box-shadow:0 8px 18px rgba(51,77,107,.22)!important;
+  }
+
+  .mobile-main-nav > .mobile-nav-home.active{
+    color:#2363d8!important;
+    background:linear-gradient(180deg,#eaf3ff,#f8fbff)!important;
+  }
+  .mobile-main-nav > .mobile-nav-attendance.active{
+    color:#0f9a66!important;
+    background:linear-gradient(180deg,#e7fbf2,#f8fffb)!important;
+  }
+  .mobile-main-nav > .mobile-nav-journal.active{
+    color:#7445d7!important;
+    background:linear-gradient(180deg,#f2ebff,#fcfaff)!important;
+  }
+  .mobile-main-nav > .mobile-nav-grades.active{
+    color:#d88b0b!important;
+    background:linear-gradient(180deg,#fff4da,#fffdf7)!important;
+  }
+  .mobile-main-nav > .mobile-nav-more.active{
+    color:#344d6b!important;
+    background:linear-gradient(180deg,#edf2f7,#fafcfe)!important;
+  }
+
+  .mobile-main-nav > .mobile-nav-home.active::before{
+    background:linear-gradient(90deg,#2f75f5,#45b6ff)!important;
+  }
+  .mobile-main-nav > .mobile-nav-attendance.active::before{
+    background:linear-gradient(90deg,#10a96f,#48d79f)!important;
+  }
+  .mobile-main-nav > .mobile-nav-journal.active::before{
+    background:linear-gradient(90deg,#7546de,#a967ff)!important;
+  }
+  .mobile-main-nav > .mobile-nav-grades.active::before{
+    background:linear-gradient(90deg,#ed9e15,#ffc555)!important;
+  }
+  .mobile-main-nav > .mobile-nav-more.active::before{
+    background:linear-gradient(90deg,#334d6b,#6f87a1)!important;
+  }
+
+  /* White glyphs from PNG assets remain crisp on colored tiles */
+  .mobile-main-nav .mobile-nav-icon .bottom-icon{
+    opacity:1!important;
+    filter:none!important;
+  }
+
+  /* ---------------------------------------------------------------
+     HEADER — label dan chip tetap terbaca pada theme light
+     --------------------------------------------------------------- */
+  :root[data-appearance="light"] .topbar-v33 .topbar-school-copy h1,
+  :root.light .topbar-v33 .topbar-school-copy h1{
+    color:#203153!important;
+  }
+  :root[data-appearance="light"] .topbar-v33 #pageTitle,
+  :root.light .topbar-v33 #pageTitle{
+    color:#72839f!important;
+  }
+
+  /* ---------------------------------------------------------------
+     ABSENSI — input tanggal lebih aman untuk layar sempit
+     --------------------------------------------------------------- */
+  .attendance-premium #attendanceDate{
+    min-height:46px!important;
+    width:100%!important;
+    font-variant-numeric:tabular-nums;
+    letter-spacing:0!important;
+  }
+}
+
+/* Installed PWA should not offer install again */
+@media (display-mode: standalone){
+  #installBtn{display:none!important}
+}

@@ -1,12 +1,12 @@
 {
-  "name": "SIAGA GURU Mobile",
+  "name": "SIAGA GURU Mobile 1.0.2",
   "short_name": "SIAGA GURU",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#eef5ff",
   "theme_color": "#1d63f0",
-  "description": "Administrasi guru di HP: gratis, offline, tanpa iklan, dan siap sinkron dengan SIAGA GURU Desktop.",
+  "description": "Administrasi guru di HP dengan kontras hero yang lebih jelas dan navigasi berwarna per modul.",
   "icons": [
     {
       "src": "assets/icons/icon-192.png",
