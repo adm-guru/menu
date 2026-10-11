@@ -3740,3 +3740,37 @@ window.addEventListener('unhandledrejection',e=>{
   });
   window.addEventListener('keydown',e=>{if(e.key==='Escape') closeSheet()});
 })();
+
+
+// ===================================================================
+// SIAGA GURU MOBILE 1.0.1 — PWA & NAV POLISH
+// ===================================================================
+(function siagaMobile101(){
+  const installBtn=document.getElementById('installBtn');
+  const isStandalone=()=>{
+    try{
+      return window.matchMedia('(display-mode: standalone)').matches ||
+             window.navigator.standalone === true;
+    }catch(_){ return false; }
+  };
+
+  if(isStandalone()) installBtn?.classList.add('hidden');
+
+  try{
+    window.matchMedia('(display-mode: standalone)').addEventListener('change',e=>{
+      if(e.matches) installBtn?.classList.add('hidden');
+    });
+  }catch(_){}
+
+  window.addEventListener('appinstalled',()=>{
+    installBtn?.classList.add('hidden');
+  });
+
+  // Saat memilih menu utama, pastikan tombol "Menu" tidak tersisa aktif.
+  document.addEventListener('click',e=>{
+    const direct=e.target.closest('.mobile-main-nav [data-page]');
+    if(direct){
+      document.getElementById('mobileMoreBtn')?.classList.remove('active');
+    }
+  });
+})();
