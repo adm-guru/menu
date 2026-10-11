@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1d63f0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="SIAGA GURU" />
+  <meta name="description" content="SIAGA GURU Mobile - Administrasi guru di HP. Gratis, offline, tanpa iklan, dan dapat disinkronkan dengan Desktop." />
+  <title>SIAGA GURU Mobile</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" href="assets/icons/icon-192.png" />
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+  <div id="appSplash" class="app-splash" aria-hidden="true">
+    <div class="splash-orbit splash-orbit-one"></div>
+    <div class="splash-orbit splash-orbit-two"></div>
+    <div class="splash-card">
+      <div class="splash-logo-wrap"><img src="assets/icons/icon-192.png" alt="SIAGA GURU"></div>
+      <div class="splash-copy"><span>Sistem Informasi Administrasi Guru</span><h1>SIAGA GURU</h1><p>Administrasi Guru Digital</p></div>
+      <div class="splash-loader"><i></i></div><small>Memuat data lokal...</small>
+    </div>
+  </div>
+
+  <div id="loginGate" class="login-gate hidden" aria-hidden="true">
+    <div class="login-aurora login-aurora-one"></div>
+    <div class="login-aurora login-aurora-two"></div>
+
+    <div class="login-shell">
+      <section class="login-brand-panel">
+        <div class="login-brand-top">
+          <img src="assets/icons/icon-192.png" alt="SIAGA GURU">
+          <div><strong>SIAGA GURU</strong><span>Administrasi Guru Digital</span></div>
+        </div>
+
+        <div class="login-brand-copy">
+          <span class="login-kicker">Sistem Informasi Administrasi Guru</span>
+          <h1>Administrasi guru,<br><em>lebih tenang.</em></h1>
+          <p>Absensi, jurnal, nilai, wali kelas, dan laporan dalam satu aplikasi yang ringan dan tetap bisa digunakan offline.</p>
+        </div>
+
+        <div class="login-benefit-grid">
+          <div><b>✓</b><span><strong>Offline-first</strong><small>Tetap bekerja tanpa internet</small></span></div>
+          <div><b>✓</b><span><strong>Privat</strong><small>Data tersimpan di perangkat</small></span></div>
+          <div><b>✓</b><span><strong>Gratis</strong><small>Tanpa iklan & langganan</small></span></div>
+          <div><b>✓</b><span><strong>Siap PWA</strong><small>Bisa dipasang seperti aplikasi</small></span></div>
+        </div>
+
+        <div class="login-brand-footer">SIAGA GURU Mobile 1.0 • Ruang kerja lokal</div>
+      </section>
+
+      <section class="login-form-panel">
+        <div id="loginModeWrap">
+          <div class="login-form-head">
+            <span>Selamat datang kembali</span>
+            <h2>Pilih Profil Guru</h2>
+            <p>Pilih profil untuk membuka ruang kerja pribadi masing-masing guru.</p>
+          </div>
+
+          <div id="loginAccountList" class="login-account-list"></div>
+          <button id="showAddAccountBtn" class="login-add-account" type="button">＋ Tambah akun guru</button>
+
+          <div id="selectedAccountPreview" class="selected-account-preview hidden">
+            <div class="selected-photo-wrap">
+              <img id="selectedAccountPhoto" class="hidden" alt="Foto guru">
+              <span id="selectedAccountInitial">G</span>
+              <img id="selectedSchoolLogo" class="selected-school-logo hidden" alt="Logo sekolah">
+            </div>
+            <div class="selected-account-copy">
+              <small>Profil dipilih</small>
+              <strong id="selectedAccountName">Guru</strong>
+              <span id="selectedAccountMeta">Sekolah • Mata Pelajaran</span>
+            </div>
+          </div>
+
+          <form id="localLoginForm" class="login-form">
+            <label>Nama Pengguna
+              <div class="login-input-wrap">
+                <span>●</span>
+                <input id="loginUsername" autocomplete="username" placeholder="Masukkan username" required>
+              </div>
+            </label>
+            <label>Kata Sandi
+              <div class="login-input-wrap">
+                <span>◆</span>
+                <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Masukkan kata sandi" required>
+                <button id="toggleLoginPassword" class="password-toggle" type="button" aria-label="Tampilkan kata sandi">◉</button>
+              </div>
+            </label>
+            <div class="login-row">
+              <label class="remember-line"><input id="rememberLogin" type="checkbox"><span>Ingat saya di perangkat ini</span></label>
+              <button id="forgotLocalAccountBtn" class="login-link" type="button">Lupa akses?</button>
+            </div>
+            <button class="login-submit" type="submit"><span>Masuk</span><b>→</b></button>
+            <div id="loginMessage" class="login-message hidden"></div>
+          </form>
+        </div>
+
+        <div id="setupAccountWrap" class="hidden">
+          <div class="login-form-head">
+            <span>Akun guru baru</span>
+            <h2>Buat Ruang Kerja Guru</h2>
+            <p>Setiap akun memiliki database lokal terpisah agar data antar-guru tidak tercampur.</p>
+          </div>
+
+          <form id="localAccountSetupForm" class="login-form">
+            <label>Nama Guru / Nama Tampilan
+              <div class="login-input-wrap">
+                <span>◆</span>
+                <input id="setupDisplayName" autocomplete="name" placeholder="Contoh: Syaiful Islam" required>
+              </div>
+            </label>
+            <label>Nama Pengguna
+              <div class="login-input-wrap">
+                <span>●</span>
+                <input id="setupLoginUsername" autocomplete="username" placeholder="Contoh: syaiful" required>
+              </div>
+            </label>
+            <label>Kata Sandi
+              <div class="login-input-wrap">
+                <span>◆</span>
+                <input id="setupLoginPassword" type="password" autocomplete="new-password" minlength="6" placeholder="Minimal 6 karakter" required>
+              </div>
+            </label>
+            <label>Ulangi Kata Sandi
+              <div class="login-input-wrap">
+                <span>◆</span>
+                <input id="setupLoginConfirm" type="password" autocomplete="new-password" minlength="6" placeholder="Ulangi kata sandi" required>
+              </div>
+            </label>
+            <button class="login-submit" type="submit"><span>Buat Akun & Masuk</span><b>→</b></button>
+            <button id="skipLocalAccountBtn" class="login-skip" type="button">← Kembali ke daftar akun</button>
+            <div id="setupLoginMessage" class="login-message hidden"></div>
+          </form>
+        </div>
+
+        <div class="login-local-note">
+          <span>🔒</span>
+          <p><strong>Multi-guru lokal.</strong> Setiap akun memakai database perangkat yang terpisah. Ini bukan akun cloud dan bukan enkripsi database.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="assets/icons/icon-192.png" alt="SIAGA GURU" class="brand-logo" />
+        <div>
+          <div class="brand-title">SIAGA GURU</div>
+          <div class="brand-sub">Administrasi Guru Digital</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item active" data-page="dashboard"><span class="nav-icon"><img src="assets/ui/home.png" alt=""></span> Beranda</button>
+        <button class="nav-item" data-page="students"><span class="nav-icon"><img src="assets/ui/students.png" alt=""></span> Data Siswa</button>
+        <button class="nav-item" data-page="attendance"><span class="nav-icon"><img src="assets/ui/attendance.png" alt=""></span> Absensi</button>
+        <button class="nav-item" data-page="journal"><span class="nav-icon"><img src="assets/ui/journal.png" alt=""></span> Jurnal</button>
+        <button class="nav-item" data-page="grades"><span class="nav-icon"><img src="assets/ui/grades.png" alt=""></span> Nilai</button>
+        <button class="nav-item" data-page="homeroom"><span class="nav-icon"><img src="assets/ui/homeroom.png" alt=""></span> Wali Kelas</button>
+        <button class="nav-item" data-page="reports"><span class="nav-icon"><img src="assets/ui/reports.png" alt=""></span> Laporan</button>
+        <button class="nav-item" data-page="backup"><span class="nav-icon"><img src="assets/ui/backup.png" alt=""></span> Backup</button>
+        <button class="nav-item" data-page="settings"><span class="nav-icon"><img src="assets/ui/settings.png" alt=""></span> Pengaturan</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-workspace-state"><i></i><span>Ruang kerja lokal</span></div>
+        <div class="free-badge">GRATIS • OFFLINE • TANPA IKLAN</div>
+        <small>SIAGA GURU Mobile 1.0</small>
+      </div>
+    </aside>
+
+    <main class="main">
+      
+<header class="topbar topbar-v33">
+        <div class="topbar-school-wrap">
+          <div class="topbar-school-logo-box">
+            <img id="topSchoolLogo" class="topbar-school-logo hidden" alt="Logo sekolah">
+            <span id="topSchoolLogoFallback" class="topbar-school-logo-fallback">SG</span>
+          </div>
+          <div class="topbar-school-copy">
+            <p class="eyebrow">Sistem Informasi Administrasi Guru</p>
+            <h1 id="topSchoolName">SIAGA GURU</h1>
+            <small id="pageTitle">Beranda</small>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="period-switch-wrap">
+            <span>Periode Aktif</span>
+            <select id="periodSwitcher" class="period-switcher" title="Ganti tahun ajaran / semester"></select>
+          </div>
+
+          <button class="icon-btn top-icon-btn" type="button" title="Notifikasi visual">
+            <span class="notif-dot"></span>🔔
+          </button>
+          <button id="helpBtn" class="icon-btn top-icon-btn" title="Pusat bantuan">?</button>
+
+          <div id="cloudSyncChip" class="cloud-sync-chip local" title="Status penyimpanan">
+            <span class="cloud-sync-dot"></span>
+            <div><strong id="cloudSyncChipLabel">Lokal</strong><small id="cloudSyncChipSub">Perangkat ini</small></div>
+          </div>
+
+          <div id="activeUserChip" class="active-user-chip hidden">
+            <span id="topUserAvatar">G</span>
+            <div><strong id="topUserName">Guru</strong><small id="topUsername">@guru</small></div>
+          </div>
+
+          <button id="logoutBtn" class="icon-btn logout-btn hidden" title="Keluar / ganti akun">↪</button>
+          <button id="lockNowBtn" class="icon-btn hidden" title="Kunci aplikasi">🔒</button>
+          <button id="themeBtn" class="icon-btn top-icon-btn" title="Ganti tema">◐</button>
+          <button id="installBtn" class="btn btn-secondary install-cta hidden"><span>＋</span> Pasang Aplikasi</button>
+          <button id="aboutBtn" class="app-version-badge about-version-btn" type="button" title="Tentang SIAGA GURU">Mobile 1.0</button>
+        </div>
+      </header>
+
+
+      
+<section id="dashboard" class="page active">
+        <div class="dashboard-v33">
+
+          <div class="dashboard-hero-row">
+            <article class="hero hero-v33">
+              <div class="hero-v33-copy">
+                <div class="hero-school-meta">
+                  <div class="hero-school-logo-box">
+                    <img id="dashSchoolLogo" class="hero-school-logo hidden" alt="Logo sekolah">
+                    <span id="dashSchoolLogoFallback" class="hero-school-logo-fallback">SG</span>
+                  </div>
+                  <div>
+                    <span class="hero-meta-label">SIAGA GURU</span>
+                    <strong id="dashSchoolName">Sekolah belum diatur</strong>
+                  </div>
+                </div>
+
+                <h2 id="welcomeText">Selamat datang, Guru Hebat.</h2>
+                <p>Kelola administrasi pembelajaran dalam satu aplikasi ringkas, modern, dan bisa digunakan tanpa internet.</p>
+
+                <div class="hero-actions">
+                  <button class="btn btn-primary" data-go="settings">Lengkapi Profil</button>
+                  <button class="btn btn-secondary" data-go="students">Kelola Siswa</button>
+                </div>
+
+                <div class="hero-feature-chips">
+                  <span>✓ Offline</span>
+                  <span>✓ Tanpa iklan</span>
+                  <span>✓ Data lokal</span>
+                </div>
+              </div>
+
+              <div class="hero-v33-visual">
+                <div class="hero-quote">Bersama<br>Membangun<br>Pendidikan</div>
+                <div class="campus-scene">
+                  <div class="campus-sky"></div>
+                  <div class="campus-cloud one"></div>
+                  <div class="campus-cloud two"></div>
+                  <div class="campus-tree left"></div>
+                  <div class="campus-tree right"></div>
+                  <div class="campus-building center">
+                    <div class="roof"></div>
+                    <div class="body"></div>
+                    <div class="window-row top"></div>
+                    <div class="window-row bottom"></div>
+                    <div class="door"></div>
+                  </div>
+                  <div class="campus-building wing left">
+                    <div class="roof"></div>
+                    <div class="body"></div>
+                    <div class="window-row"></div>
+                  </div>
+                  <div class="campus-building wing right">
+                    <div class="roof"></div>
+                    <div class="body"></div>
+                    <div class="window-row"></div>
+                  </div>
+                  <div class="campus-ground"></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="panel status-panel-v33">
+              <div class="panel-head status-head-v33">
+                <div>
+                  <span class="muted">Informasi kerja</span>
+                  <h3>Status Aplikasi</h3>
+                </div>
+                <span class="status-online-pill">● Online</span>
+              </div>
+
+              <div class="status-rows">
+                <div class="status-row">
+                  <div class="status-row-icon">⚙</div>
+                  <div class="status-row-main">
+                    <strong>Mode</strong>
+                    <small>Aktif dan siap digunakan</small>
+                  </div>
+                  <div id="onlineStatus" class="status-row-value">Online</div>
+                </div>
+                <div class="status-row">
+                  <div class="status-row-icon">🗄</div>
+                  <div class="status-row-main">
+                    <strong>Penyimpanan</strong>
+                    <small>Semua data ada di perangkat</small>
+                  </div>
+                  <div class="status-row-value">Perangkat Anda</div>
+                </div>
+                <div class="status-row">
+                  <div class="status-row-icon">🛡</div>
+                  <div class="status-row-main">
+                    <strong>Privasi</strong>
+                    <small>Tetap privat dan terkendali</small>
+                  </div>
+                  <div class="status-row-value">Data lokal</div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="shortcut-grid-v33">
+            <button type="button" class="shortcut-card-v33 blue" data-go="students">
+              <div class="shortcut-card-icon">👥</div>
+              <div class="shortcut-card-copy">
+                <h3>Data Siswa</h3>
+                <p>Kelola data siswa dan informasi sekolah</p>
+                <strong id="statStudents">0</strong>
+              </div>
+              <span class="shortcut-card-arrow">→</span>
+            </button>
+
+            <button type="button" class="shortcut-card-v33 green" data-go="attendance">
+              <div class="shortcut-card-icon">🗓</div>
+              <div class="shortcut-card-copy">
+                <h3>Absensi</h3>
+                <p id="smartAttendanceDetail">0/0 siswa tercatat</p>
+                <strong id="smartAttendanceStatus">Belum</strong>
+              </div>
+              <span class="shortcut-card-arrow">→</span>
+            </button>
+
+            <button type="button" class="shortcut-card-v33 purple" data-go="journal">
+              <div class="shortcut-card-icon">📘</div>
+              <div class="shortcut-card-copy">
+                <h3>Jurnal</h3>
+                <p id="smartJournalDetail">Belum ada jurnal</p>
+                <strong id="smartJournalToday">0</strong>
+              </div>
+              <span class="shortcut-card-arrow">→</span>
+            </button>
+
+            <button type="button" class="shortcut-card-v33 gold" data-go="grades">
+              <div class="shortcut-card-icon">★</div>
+              <div class="shortcut-card-copy">
+                <h3>Nilai</h3>
+                <p id="smartGradeDetail">Belum ada penilaian</p>
+                <strong id="smartGradeProgress">0%</strong>
+              </div>
+              <span class="shortcut-card-arrow">→</span>
+            </button>
+          </div>
+
+          <div class="dashboard-content-v33">
+            <article class="panel admin-panel-v33">
+              <div class="panel-head admin-panel-head">
+                <div class="admin-title-block">
+                  <div class="admin-title-icon">🗎</div>
+                  <div>
+                    <h3>Administrasi</h3>
+                    <p class="muted">Pengelolaan data dan dokumen penting guru</p>
+                  </div>
+                </div>
+                <div class="admin-progress-box">
+                  <strong id="smartChecklistScore">0%</strong>
+                  <span>Progress Kelengkapan Data</span>
+                </div>
+              </div>
+              <div id="smartChecklist" class="admin-checklist-v33"></div>
+            </article>
+
+            <div class="dashboard-side-v33">
+              <article class="panel teacher-profile-v33">
+                <div class="panel-head">
+                  <div>
+                    <span class="muted">Profil Guru</span>
+                    <h3>Identitas Pengguna</h3>
+                  </div>
+                </div>
+
+                <div class="teacher-profile-main">
+                  <div class="teacher-avatar-v33">
+                    <img id="dashTeacherPhoto" class="hidden" alt="Foto guru">
+                    <span id="dashTeacherInitial">G</span>
+                  </div>
+                  <div class="teacher-profile-copy">
+                    <strong id="dashTeacherName">Guru Hebat</strong>
+                    <small id="dashTeacherRole">Guru</small>
+                  </div>
+                </div>
+
+                <div class="teacher-mini-stats-v33">
+                  <div><strong id="dashClassCount">0</strong><span>Kelas</span></div>
+                  <div><strong id="dashAssignmentCount">0</strong><span>Beban</span></div>
+                </div>
+
+                <div id="dashAssignmentChips" class="assignment-chip-wrap-v33"></div>
+              </article>
+
+              <article class="panel summary-panel-v33">
+                <div class="panel-head">
+                  <div>
+                    <span class="muted">Hari ini</span>
+                    <h3>Ringkasan Aktivitas</h3>
+                  </div>
+                  <span id="smartTodayDate" class="smart-date-chip">Hari ini</span>
+                </div>
+
+                <div class="summary-list-v33">
+                  <div class="summary-item-v33">
+                    <div class="summary-item-icon">✓</div>
+                    <div><strong>Absensi</strong><small id="smartAttendanceDetailMirror">Kehadiran siswa</small></div>
+                    <span id="smartAttendanceStatusMirror">Belum</span>
+                  </div>
+                  <div class="summary-item-v33">
+                    <div class="summary-item-icon">▤</div>
+                    <div><strong>Jurnal</strong><small id="smartJournalDetailMirror">Jurnal mengajar</small></div>
+                    <span id="smartJournalTodayMirror">0</span>
+                  </div>
+                  <div class="summary-item-v33">
+                    <div class="summary-item-icon">★</div>
+                    <div><strong>Nilai</strong><small id="smartGradeDetailMirror">Progres penilaian</small></div>
+                    <span id="smartGradeProgressMirror">0%</span>
+                  </div>
+                  <div class="summary-item-v33">
+                    <div class="summary-item-icon attention">!</div>
+                    <div><strong>Perlu Perhatian</strong><small id="smartAttentionDetail">Belum ada catatan</small></div>
+                    <span id="smartAttentionCount">0</span>
+                  </div>
+                </div>
+
+                <div id="smartAttentionList" class="attention-list-v33"></div>
+              </article>
+
+              <article class="panel recent-panel-v33">
+                <div class="panel-head">
+                  <div>
+                    <span class="muted">Aktivitas terbaru</span>
+                    <h3>Riwayat Cepat</h3>
+                  </div>
+                </div>
+                <div id="smartRecentActivity" class="recent-activity-v33"></div>
+              </article>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <section id="students" class="page premium-module students-premium">
+        <div class="page-actions">
+          <div>
+            <p class="muted">Data master peserta didik</p>
+            <h2>Data Siswa</h2>
+          </div>
+          <button id="addStudentBtn" class="btn btn-primary">+ Tambah Siswa</button>
+        </div>
+
+        <div class="panel">
+          <div class="toolbar student-toolbar">
+            <input id="studentSearch" class="input" placeholder="Cari nama atau NIS..." />
+            <button id="bulkStudentBtn" class="btn btn-secondary">Input Banyak</button>
+            <button id="importStudentBtn" class="btn btn-secondary">⇧ Import Excel</button>
+            <button id="downloadStudentTemplateBtn" class="btn btn-secondary">⇩ Template</button>
+            <button id="bulkManageStudentBtn" class="btn btn-secondary">⚙ Kelola Massal <span id="selectedStudentCount" class="selection-count">0</span></button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th class="check-col"><input id="selectAllStudents" type="checkbox" aria-label="Pilih semua siswa"></th><th>No</th><th>Nama</th><th>NIS</th><th>JK</th><th>Kelas Aktif</th><th>Status</th><th>Aksi</th></tr></thead>
+              <tbody id="studentTableBody"></tbody>
+            </table>
+          </div>
+          <div id="studentEmpty" class="empty-state">
+            <div class="empty-icon">👥</div>
+            <h3>Belum ada data siswa</h3>
+            <p>Tambahkan siswa pertama atau gunakan input banyak untuk menempel daftar nama.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="settings" class="page premium-module settings-premium">
+        <div class="page-actions">
+          <div><p class="muted">Identitas, sekolah, dan beban mengajar</p><h2>Pengaturan Profil</h2></div>
+        </div>
+
+        <div class="settings-overview-banner">
+          <div class="settings-overview-icon">⚙</div>
+          <div><strong>Lengkapi identitas sekali, gunakan untuk seluruh administrasi.</strong><span>Profil sekolah dan guru akan digunakan pada dashboard, laporan, cetak, dan identitas akun.</span></div>
+        </div>
+
+        <div class="settings-grid">
+          <form id="profileForm" class="panel form-grid settings-profile-form">
+            <div class="form-span panel-head">
+              <div><span class="muted">Identitas utama</span><h3>Profil Sekolah & Guru</h3></div>
+            </div>
+
+            <label>Nama Sekolah<input class="input" name="school" placeholder="Contoh: SMK Negeri 1 Way Bungur" required></label>
+            <label>NPSN / ID Sekolah<input class="input" name="schoolId" placeholder="Opsional"></label>
+            <label>Alamat Sekolah<input class="input" name="schoolAddress" placeholder="Alamat sekolah"></label>
+            <label>Instansi / Dinas / Yayasan<input class="input" name="authorityName" placeholder="Contoh: Dinas Pendidikan Provinsi Lampung"></label>
+            <label>Nama Kepala Sekolah<input class="input" name="principalName" placeholder="Nama lengkap dan gelar"></label>
+            <label>NIP Kepala Sekolah<input class="input" name="principalId" placeholder="NIP Kepala Sekolah"></label>
+            <label>Tempat Tanda Tangan<input class="input" name="reportCity" placeholder="Contoh: Way Jepara"></label>
+
+            <label>Nama Guru<input class="input" name="teacher" placeholder="Nama lengkap dan gelar"></label>
+            <label>NIP / NUPTK / ID Guru<input class="input" name="teacherId" placeholder="Opsional"></label>
+            <label>No. HP Guru<input class="input" name="teacherPhone" placeholder="Opsional"></label>
+            <label>Email Guru<input class="input" name="teacherEmail" type="email" placeholder="Opsional"></label>
+
+            <label>Mata Pelajaran Utama<input class="input" name="subject" placeholder="Contoh: Pendidikan Agama Islam"></label>
+            <label>Kelas Utama<input class="input" name="className" placeholder="Contoh: X AKL"></label>
+            <label>Semester
+              <select class="input" name="semester">
+                <option>Ganjil</option>
+                <option>Genap</option>
+              </select>
+            </label>
+            <label>Tahun Ajaran<input class="input" name="year" placeholder="2026/2027"></label>
+            <label>Jabatan / Peran<input class="input" name="role" placeholder="Guru Mapel / Wali Kelas"></label>
+            <label>Label Tanda Tangan Guru<input class="input" name="teacherSignLabel" placeholder="Contoh: Guru Mata Pelajaran / Wali Kelas"></label>
+
+            <div class="form-span actions-row">
+              <button class="btn btn-primary" type="submit">Simpan Profil</button>
+            </div>
+          </form>
+
+          
+<aside class="panel media-profile-panel">
+            <div class="panel-head"><div><span class="muted">Identitas visual</span><h3>Logo & Foto</h3></div></div>
+
+            <div class="media-upload-block">
+              <div class="media-preview square">
+                <img id="provinceLogoPreview" class="hidden" alt="Logo provinsi">
+                <span id="provinceLogoPlaceholder">🛡️</span>
+              </div>
+              <div class="media-upload-copy">
+                <strong>Logo Provinsi</strong>
+                <p class="muted">Opsional. Digunakan pada kop laporan bersama logo sekolah.</p>
+                <div class="media-actions">
+                  <label class="btn btn-secondary file-btn">Pilih Logo<input id="provinceLogoInput" type="file" accept="image/png,image/jpeg,image/webp"></label>
+                  <button id="removeProvinceLogoBtn" class="btn btn-secondary" type="button">Hapus</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="media-upload-block">
+              <div class="media-preview square">
+                <img id="schoolLogoPreview" class="hidden" alt="Logo sekolah">
+                <span id="schoolLogoPlaceholder">🏫</span>
+              </div>
+              <div class="media-upload-copy">
+                <strong>Logo Sekolah</strong>
+                <p class="muted">PNG/JPG. Gambar otomatis diperkecil agar penyimpanan tetap ringan.</p>
+                <div class="media-actions">
+                  <label class="btn btn-secondary file-btn">Pilih Logo<input id="schoolLogoInput" type="file" accept="image/png,image/jpeg,image/webp"></label>
+                  <button id="removeSchoolLogoBtn" class="btn btn-secondary" type="button">Hapus</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="media-upload-block">
+              <div class="media-preview portrait">
+                <img id="teacherPhotoPreview" class="hidden" alt="Foto guru">
+                <span id="teacherPhotoPlaceholder">👤</span>
+              </div>
+              <div class="media-upload-copy">
+                <strong>Foto Guru</strong>
+                <p class="muted">Opsional. Digunakan pada dashboard dan identitas aplikasi.</p>
+                <div class="media-actions">
+                  <label class="btn btn-secondary file-btn">Pilih Foto<input id="teacherPhotoInput" type="file" accept="image/png,image/jpeg,image/webp"></label>
+                  <button id="removeTeacherPhotoBtn" class="btn btn-secondary" type="button">Hapus</button>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+        </div>
+
+        <article class="panel appearance-panel">
+          <div class="panel-head">
+            <div>
+              <span class="muted">Personalisasi akun</span>
+              <h3>Tampilan Premium</h3>
+            </div>
+            <span id="appearanceThemeName" class="appearance-theme-name">Aurora</span>
+          </div>
+
+          <div class="appearance-layout">
+            <div class="appearance-controls">
+              <div class="appearance-section">
+                <strong>Warna Utama</strong>
+                <p class="muted">Warna tersimpan khusus untuk akun guru yang sedang aktif.</p>
+                <div class="theme-preset-grid">
+                  <button class="theme-preset" type="button" data-accent-theme="aurora">
+                    <i style="--p1:#7c5cff;--p2:#22d3ee"></i><span>Aurora</span>
+                  </button>
+                  <button class="theme-preset" type="button" data-accent-theme="ocean">
+                    <i style="--p1:#2563eb;--p2:#06b6d4"></i><span>Ocean</span>
+                  </button>
+                  <button class="theme-preset" type="button" data-accent-theme="emerald">
+                    <i style="--p1:#059669;--p2:#22c55e"></i><span>Emerald</span>
+                  </button>
+                  <button class="theme-preset" type="button" data-accent-theme="lampung">
+                    <i style="--p1:#8f2442;--p2:#d6a329"></i><span>Maroon Gold</span>
+                  </button>
+                  <button class="theme-preset" type="button" data-accent-theme="ruby">
+                    <i style="--p1:#e11d48;--p2:#f97316"></i><span>Ruby</span>
+                  </button>
+                  <button class="theme-preset" type="button" data-accent-theme="graphite">
+                    <i style="--p1:#64748b;--p2:#a78bfa"></i><span>Graphite</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="appearance-section">
+                <strong>Mode Tampilan</strong>
+                <div class="appearance-mode-grid">
+                  <button type="button" class="appearance-mode" data-appearance-mode="dark"><b>●</b><span>Gelap</span></button>
+                  <button type="button" class="appearance-mode" data-appearance-mode="light"><b>○</b><span>Terang</span></button>
+                  <button type="button" class="appearance-mode" data-appearance-mode="system"><b>◐</b><span>Otomatis</span></button>
+                </div>
+              </div>
+
+              <div class="appearance-section display-scale-section">
+                <strong>Skala Tampilan Desktop</strong>
+                <p class="muted">Default 70% agar halaman terasa lebih ringkas dan lebih banyak informasi terlihat sekaligus.</p>
+                <div class="display-scale-grid">
+                  <button type="button" class="display-scale-btn active" data-ui-scale="70"><b>70%</b><span>Ringkas</span></button>
+                  <button type="button" class="display-scale-btn" data-ui-scale="80"><b>80%</b><span>Kompak</span></button>
+                  <button type="button" class="display-scale-btn" data-ui-scale="90"><b>90%</b><span>Nyaman</span></button>
+                  <button type="button" class="display-scale-btn" data-ui-scale="100"><b>100%</b><span>Normal</span></button>
+                </div>
+                <small class="display-scale-note">Pada HP/tablet skala otomatis kembali 100% agar tombol tetap mudah disentuh.</small>
+              </div>
+            </div>
+
+            <div class="premium-theme-preview" aria-hidden="true">
+              <div class="preview-window-head">
+                <span></span><span></span><span></span>
+                <small>SIAGA GURU</small>
+              </div>
+              <div class="preview-window-body">
+                <div class="preview-mini-sidebar">
+                  <i></i><i class="active"></i><i></i><i></i>
+                </div>
+                <div class="preview-mini-content">
+                  <div class="preview-mini-hero"><b></b><span></span><small></small></div>
+                  <div class="preview-mini-stats"><i></i><i></i><i></i></div>
+                  <div class="preview-mini-panels"><i></i><i></i></div>
+                </div>
+              </div>
+              <div class="preview-caption">
+                <strong>Identitas visual pribadi</strong>
+                <span>Berubah tanpa memengaruhi data dan akun guru lain.</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel cloud-ready-panel">
+          <div class="panel-head">
+            <div><span class="muted">Database beberapa perangkat</span><h3>Sinkronisasi Cloud</h3></div>
+            <span id="cloudStatusBadge" class="cloud-status-badge local">Mode Lokal</span>
+          </div>
+          <p class="muted cloud-intro">SIAGA GURU tetap menyimpan data di perangkat agar bisa digunakan offline. Mode Cloud disiapkan untuk menyinkronkan ruang kerja guru antar-perangkat menggunakan Supabase.</p>
+          <div class="cloud-mode-grid">
+            <button id="cloudModeLocalBtn" class="cloud-mode-card active" type="button" data-cloud-mode="local"><span class="cloud-mode-icon">📱</span><div><strong>Hanya Perangkat</strong><small>Data tetap lokal seperti sekarang. Cocok untuk penggunaan pribadi/offline.</small></div><b>✓</b></button>
+            <button id="cloudModeSyncBtn" class="cloud-mode-card" type="button" data-cloud-mode="cloud"><span class="cloud-mode-icon">☁</span><div><strong>Cloud + Offline</strong><small>IndexedDB tetap dipakai, lalu perubahan disiapkan untuk sinkronisasi.</small></div><b>→</b></button>
+          </div>
+          <div id="cloudConfigWrap" class="cloud-config-wrap hidden">
+            <div class="cloud-config-notice"><span>ℹ</span><p>Gunakan <strong>Supabase Project URL</strong> dan <strong>anon/publishable key</strong>. Jangan pernah memasukkan <em>service_role key</em> ke aplikasi browser.</p></div>
+            <div class="cloud-auth-panel">
+              <div class="cloud-auth-head">
+                <div><span class="muted">Supabase Auth</span><strong>Login Cloud Guru</strong><small>Satu akun cloud dapat membuka ruang kerja yang sama dari laptop atau HP lain.</small></div>
+                <span id="cloudAuthBadge" class="cloud-auth-badge offline">Belum login</span>
+              </div>
+              <div class="cloud-auth-grid">
+                <label>Email Cloud<input id="cloudAuthEmail" class="input" type="email" autocomplete="email" placeholder="guru@sekolah.sch.id"></label>
+                <label>Kata Sandi Cloud<input id="cloudAuthPassword" class="input" type="password" autocomplete="current-password" minlength="6" placeholder="Minimal 6 karakter"></label>
+              </div>
+              <div class="cloud-auth-actions">
+                <button id="cloudSignInBtn" class="btn btn-primary" type="button">Masuk Cloud</button>
+                <button id="cloudSignUpBtn" class="btn btn-secondary" type="button">Daftar Akun Cloud</button>
+                <button id="cloudSignOutBtn" class="btn btn-secondary hidden" type="button">Keluar Cloud</button>
+              </div>
+              <div id="cloudAuthIdentity" class="cloud-auth-identity hidden"><span>☁</span><div><strong id="cloudAuthUserEmail">-</strong><small id="cloudAuthUserId">-</small></div></div>
+            </div>
+            <div class="cloud-config-grid">
+              <label>Supabase Project URL<input id="cloudSupabaseUrl" class="input" placeholder="https://xxxx.supabase.co"></label>
+              <label>Anon / Publishable Key<input id="cloudSupabaseAnonKey" class="input" type="password" placeholder="eyJ... atau sb_publishable_..."></label>
+              <label>Kode Sekolah / Workspace<input id="cloudSchoolCode" class="input" placeholder="Contoh: SMKN1WB"></label>
+              <label>Identitas Perangkat<input id="cloudDeviceId" class="input" readonly></label>
+            </div>
+            <div class="cloud-action-row">
+              <button id="saveCloudConfigBtn" class="btn btn-primary" type="button">Simpan Konfigurasi</button>
+              <button id="testCloudConnectionBtn" class="btn btn-secondary" type="button">Uji Koneksi</button>
+              <button id="prepareCloudDataBtn" class="btn btn-secondary" type="button">Siapkan Data Cloud</button>
+              <button id="syncCloudNowBtn" class="btn btn-primary" type="button">Sinkronkan Sekarang</button>
+              <button id="pushCloudBtn" class="btn btn-secondary" type="button">Kirim ke Cloud</button>
+              <button id="pullCloudBtn" class="btn btn-secondary" type="button">Ambil dari Cloud</button>
+            </div>
+          </div>
+          <div class="cloud-status-grid">
+            <div class="cloud-status-card"><span>Perangkat</span><strong id="cloudDeviceState">Siap Offline</strong><small>IndexedDB lokal</small></div>
+            <div class="cloud-status-card"><span>Cloud</span><strong id="cloudRemoteState">Belum aktif</strong><small id="cloudRemoteDetail">Supabase belum dikonfigurasi</small></div>
+            <div class="cloud-status-card"><span>Antrean</span><strong id="cloudQueueCount">0</strong><small>Perubahan menunggu sinkronisasi</small></div>
+            <div class="cloud-status-card"><span>Sinkronisasi Terakhir</span><strong id="cloudLastSync">Belum pernah</strong><small>Status ruang kerja aktif</small></div>
+          </div>
+          <div class="cloud-phase-note"><span class="cloud-phase-pill">SYNC v1</span><p>v3.7 dapat login melalui Supabase Auth dan menyinkronkan <strong>snapshot ruang kerja guru</strong> antar-perangkat. Jika dua perangkat mengubah data bersamaan, gunakan tombol Kirim/Ambil Cloud untuk menentukan versi yang dipakai.</p></div>
+        </article>
+
+        <article class="panel academic-period-panel">
+          <div class="panel-head">
+            <div><span class="muted">Riwayat administrasi</span><h3>Semester & Tahun Ajaran</h3></div>
+            <span id="activePeriodBadge" class="active-period-badge">-</span>
+          </div>
+          <p class="muted teaching-help">Setiap periode menyimpan absensi, jurnal, nilai, catatan wali kelas, dan beban mengajar secara terpisah. Data periode lama tetap dapat dibuka kembali.</p>
+
+          <form id="academicPeriodForm" class="academic-period-form">
+            <label>Tahun Ajaran
+              <input id="newPeriodYear" class="input" placeholder="Contoh: 2026/2027" required>
+            </label>
+            <label>Semester
+              <select id="newPeriodSemester" class="input">
+                <option value="Ganjil">Ganjil</option>
+                <option value="Genap">Genap</option>
+              </select>
+            </label>
+            <div class="period-copy-options">
+              <label class="copy-period-option">
+                <input id="copyTeachingContexts" type="checkbox" checked>
+                <span>Salin kelas/mapel</span>
+              </label>
+              <label class="copy-period-option">
+                <input id="copyStudentPlacements" type="checkbox" checked>
+                <span>Salin penempatan siswa</span>
+              </label>
+            </div>
+            <button class="btn btn-primary" type="submit">+ Buat Periode</button>
+          </form>
+
+          <div id="academicPeriodList" class="academic-period-list"></div>
+        </article>
+
+        <article class="panel teaching-panel">
+          <div class="panel-head">
+            <div><span class="muted">Beban mengajar</span><h3>Kelas & Mata Pelajaran yang Diampu</h3></div>
+            <span class="assignment-count-badge" id="assignmentCountBadge">0 data</span>
+          </div>
+          <p class="muted teaching-help">Tambahkan semua kelas yang Bapak/Ibu ajar. Data ini membantu SIAGA GURU menyiapkan pilihan kelas secara otomatis.</p>
+
+          <form id="teachingForm" class="teaching-form">
+            <label>Kelas
+              <input class="input" name="className" placeholder="Contoh: XI TKJ 1" required>
+            </label>
+            <label>Mata Pelajaran
+              <input class="input" name="subject" placeholder="Contoh: Pendidikan Agama Islam" required>
+            </label>
+            <label>JP / Minggu
+              <input class="input" name="weeklyJP" type="number" min="1" max="20" value="3">
+            </label>
+            <button class="btn btn-primary" type="submit">+ Tambahkan</button>
+          </form>
+
+          <div id="teachingEmpty" class="empty-state compact-empty">
+            <div class="empty-icon">📚</div>
+            <h3>Belum ada kelas yang diampu</h3>
+            <p>Tambahkan kelas dan mata pelajaran untuk membangun profil mengajar.</p>
+          </div>
+
+          <div id="teachingList" class="teaching-list"></div>
+        </article>
+      </section>
+
+      <section id="backup" class="page premium-module backup-premium">
+        <div class="page-actions"><div><p class="muted">Jaga keamanan data Anda</p><h2>Backup & Restore</h2></div></div>
+        <div class="section-grid">
+          <article class="panel backup-action-card backup-download-card">
+            <div class="backup-card-icon">⇩</div>
+            <h3>Backup Data</h3>
+            <p class="muted">Unduh seluruh data SIAGA GURU beserta riwayat periode ke file JSON. Simpan file di Google Drive, flashdisk, atau penyimpanan pribadi.</p>
+            <button id="backupBtn" class="btn btn-primary">Unduh Backup</button>
+          </article>
+          <article class="panel backup-action-card backup-restore-card">
+            <div class="backup-card-icon">↻</div>
+            <h3>Restore Data</h3>
+            <p class="muted">Pulihkan data dari file backup SIAGA GURU.</p>
+            <input id="restoreFile" type="file" accept=".json,application/json" class="input" />
+            <button id="restoreBtn" class="btn btn-secondary">Pulihkan Data</button>
+          </article>
+        </div>
+
+        <article class="panel account-login-panel">
+          <div class="panel-head">
+            <div><span class="muted">Multi-guru lokal</span><h3>Akun & Ruang Kerja Guru</h3></div>
+            <span id="localAccountStatus" class="account-status-badge">-</span>
+          </div>
+          <p class="muted">Satu perangkat dapat digunakan beberapa guru. Setiap akun memiliki database lokal sendiri sehingga siswa, jurnal, nilai, dan laporan tidak tercampur.</p>
+
+          <div class="active-user-card">
+            <div id="activeUserAvatar" class="active-user-avatar">G</div>
+            <div><small>Akun aktif</small><strong id="activeUserName">Guru</strong><span id="activeUserUsername">@guru</span></div>
+          </div>
+
+          <div id="accountManagerList" class="account-manager-list"></div>
+
+          <div class="actions-row">
+            <button id="addLocalUserBtn" class="btn btn-primary" type="button">+ Tambah Akun Guru</button>
+            <button id="switchLocalUserBtn" class="btn btn-secondary" type="button">Ganti Akun</button>
+          </div>
+
+          <div class="password-change-box">
+            <div><strong>Ganti kata sandi akun aktif</strong><small>Kata sandi hanya berlaku untuk akun yang sedang digunakan.</small></div>
+            <div class="local-account-grid">
+              <label>Kata Sandi Lama
+                <input id="currentAccountPassword" class="input" type="password" autocomplete="current-password">
+              </label>
+              <label>Kata Sandi Baru
+                <input id="newAccountPassword" class="input" type="password" autocomplete="new-password" placeholder="Minimal 6 karakter">
+              </label>
+              <label>Ulangi Kata Sandi
+                <input id="newAccountPasswordConfirm" class="input" type="password" autocomplete="new-password">
+              </label>
+            </div>
+            <button id="changeAccountPasswordBtn" class="btn btn-secondary" type="button">Ganti Kata Sandi</button>
+          </div>
+        </article>
+
+        <article class="panel privacy-lock-panel">
+          <div class="panel-head">
+            <div><span class="muted">Privasi lokal</span><h3>Kunci Aplikasi dengan PIN</h3></div>
+            <label class="switch-line"><input id="pinLockEnabled" type="checkbox"><span>Aktif</span></label>
+          </div>
+          <p class="muted">PIN membantu mencegah orang lain membuka SIAGA GURU di perangkat yang sama. Fitur ini <strong>bukan enkripsi data</strong>, sehingga backup tetap menjadi perlindungan utama.</p>
+          <div class="pin-setup-row">
+            <input id="securityPinInput" class="input pin-input" type="password" inputmode="numeric" maxlength="8" placeholder="PIN 4–8 angka">
+            <button id="saveSecurityPinBtn" class="btn btn-secondary" type="button">Simpan / Ganti PIN</button>
+            <button id="privacyLockNowBtn" class="btn btn-primary" type="button">Kunci Sekarang</button>
+          </div>
+        </article>
+      </section>
+
+      <section id="attendance" class="page premium-module attendance-premium">
+        <div class="page-actions">
+          <div>
+            <p class="muted">Kehadiran peserta didik</p>
+            <h2>Absensi Harian</h2>
+          </div>
+          <div class="attendance-date-wrap">
+            <label for="attendanceDate">Tanggal</label>
+            <input id="attendanceDate" type="date" class="input compact-input">
+          </div>
+        </div>
+
+        <div class="attendance-summary-grid">
+          <article class="mini-stat present"><span>H</span><div><small>Hadir</small><strong id="sumH">0</strong></div></article>
+          <article class="mini-stat sick"><span>S</span><div><small>Sakit</small><strong id="sumS">0</strong></div></article>
+          <article class="mini-stat permit"><span>I</span><div><small>Izin</small><strong id="sumI">0</strong></div></article>
+          <article class="mini-stat absent"><span>A</span><div><small>Alpa</small><strong id="sumA">0</strong></div></article>
+          <article class="mini-stat late"><span>T</span><div><small>Terlambat</small><strong id="sumT">0</strong></div></article>
+        </div>
+
+        <div class="panel attendance-panel">
+          <div class="attendance-toolbar">
+            <div>
+              <h3>Daftar Kehadiran</h3>
+              <p class="muted" id="attendanceHint">Pilih tanggal, lalu tandai status setiap siswa.</p>
+            </div>
+            <div class="attendance-actions">
+              <button id="markAllPresentBtn" class="btn btn-secondary">✓ Semua Hadir</button>
+              <button id="saveAttendanceBtn" class="btn btn-primary">Simpan Absensi</button>
+            </div>
+          </div>
+
+          <div id="attendanceEmpty" class="empty-state">
+            <div class="empty-icon">✓</div>
+            <h3>Belum ada data siswa</h3>
+            <p>Tambahkan siswa terlebih dahulu dari menu Data Siswa.</p>
+            <button class="btn btn-primary" data-go="students">Kelola Data Siswa</button>
+          </div>
+
+          <div id="attendanceList" class="attendance-list"></div>
+        </div>
+
+        <div class="section-grid attendance-bottom-grid">
+          <article class="panel">
+            <div class="panel-head">
+              <div><span class="muted">Rekap</span><h3>Ringkasan Bulan Ini</h3></div>
+            </div>
+            <div id="monthlyAttendanceSummary" class="monthly-summary"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <div><span class="muted">Riwayat</span><h3>Absensi Terakhir</h3></div>
+            </div>
+            <div id="attendanceHistory" class="history-list"></div>
+          </article>
+        </div>
+      </section>
+      <section id="journal" class="page premium-module journal-premium">
+        <div class="page-actions">
+          <div>
+            <p class="muted">Catatan kegiatan pembelajaran</p>
+            <h2>Jurnal Mengajar</h2>
+          </div>
+          <button id="addJournalBtn" class="btn btn-primary">+ Tambah Jurnal</button>
+        </div>
+
+        <div class="journal-summary-grid">
+          <article class="mini-stat journal-blue"><span>▤</span><div><small>Bulan Ini</small><strong id="journalMonthCount">0</strong></div></article>
+          <article class="mini-stat journal-green"><span>✓</span><div><small>Terlaksana</small><strong id="journalDoneCount">0</strong></div></article>
+          <article class="mini-stat journal-purple"><span>🏫</span><div><small>Kelas Aktif</small><strong id="journalClassCount">0</strong></div></article>
+          <article class="mini-stat journal-orange"><span>◷</span><div><small>JP Bulan Ini</small><strong id="journalJPCount">0</strong></div></article>
+        </div>
+
+        <div class="panel">
+          <div class="journal-toolbar">
+            <div class="journal-filters">
+              <input id="journalSearch" class="input" placeholder="Cari materi, kelas, atau catatan...">
+              <input id="journalMonthFilter" type="month" class="input compact-input">
+              <select id="journalClassFilter" class="input compact-input">
+                <option value="">Semua Kelas</option>
+              </select>
+            </div>
+            <button id="clearJournalFilter" class="btn btn-secondary">Reset Filter</button>
+          </div>
+
+          <div id="journalEmpty" class="empty-state">
+            <div class="empty-icon">▤</div>
+            <h3>Belum ada jurnal pembelajaran</h3>
+            <p>Tambahkan jurnal pertama untuk mulai mencatat kegiatan mengajar.</p>
+            <button class="btn btn-primary" id="journalEmptyAddBtn">+ Tambah Jurnal</button>
+          </div>
+
+          <div id="journalCards" class="journal-cards"></div>
+        </div>
+
+        <div class="section-grid journal-bottom-grid">
+          <article class="panel">
+            <div class="panel-head">
+              <div><span class="muted">Ringkasan</span><h3>Aktivitas Bulan Ini</h3></div>
+            </div>
+            <div id="journalMonthlySummary" class="monthly-summary"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <div><span class="muted">Terbaru</span><h3>Jurnal Terakhir</h3></div>
+            </div>
+            <div id="journalRecent" class="history-list"></div>
+          </article>
+        </div>
+      </section>
+      <section id="grades" class="page premium-module grades-premium">
+        <div class="page-actions">
+          <div>
+            <p class="muted">Penilaian hasil belajar peserta didik</p>
+            <h2>Daftar Nilai</h2>
+          </div>
+          <button id="addAssessmentBtn" class="btn btn-primary">+ Buat Penilaian</button>
+        </div>
+
+        <div class="grade-summary-grid">
+          <article class="mini-stat grade-blue"><span>Σ</span><div><small>Rata-rata</small><strong id="gradeAvg">0</strong></div></article>
+          <article class="mini-stat grade-green"><span>↑</span><div><small>Tertinggi</small><strong id="gradeMax">0</strong></div></article>
+          <article class="mini-stat grade-orange"><span>↓</span><div><small>Terendah</small><strong id="gradeMin">0</strong></div></article>
+          <article class="mini-stat grade-purple"><span>✓</span><div><small>Terisi</small><strong id="gradeFilled">0/0</strong></div></article>
+        </div>
+
+        <div class="panel grade-control-panel">
+          <div class="grade-control-grid">
+            <label>Penilaian
+              <select id="assessmentSelect" class="input">
+                <option value="">Pilih penilaian...</option>
+              </select>
+            </label>
+            <label>Kelas
+              <select id="gradeClassFilter" class="input">
+                <option value="">Semua Kelas</option>
+              </select>
+            </label>
+            <label>Cari Siswa
+              <input id="gradeSearch" class="input" placeholder="Nama atau NIS...">
+            </label>
+            <div class="grade-control-actions">
+              <button id="editAssessmentBtn" class="btn btn-secondary">Edit</button>
+              <button id="deleteAssessmentBtn" class="btn btn-secondary danger-soft">Hapus</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel grade-table-panel">
+          <div class="grade-table-head">
+            <div>
+              <h3 id="gradeAssessmentTitle">Belum ada penilaian dipilih</h3>
+              <p class="muted" id="gradeAssessmentMeta">Buat atau pilih penilaian untuk mulai mengisi nilai.</p>
+            </div>
+            <div class="grade-table-actions">
+              <button id="saveGradesBtn" class="btn btn-primary">Simpan Nilai</button>
+            </div>
+          </div>
+
+          <div id="gradeEmpty" class="empty-state">
+            <div class="empty-icon">★</div>
+            <h3>Belum ada penilaian</h3>
+            <p>Buat penilaian seperti Formatif, Sumatif, PTS/STS, PAS/SAS, atau lainnya.</p>
+            <button class="btn btn-primary" id="gradeEmptyAddBtn">+ Buat Penilaian</button>
+          </div>
+
+          <div class="table-wrap" id="gradeTableWrap">
+            <table class="grade-table">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Nama Siswa</th>
+                  <th>NIS</th>
+                  <th>Kelas</th>
+                  <th>Nilai Awal</th>
+                  <th>Remedial</th>
+                  <th>Nilai Akhir</th>
+                  <th>Ketuntasan</th>
+                </tr>
+              </thead>
+              <tbody id="gradeTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="section-grid grade-bottom-grid">
+          <article class="panel">
+            <div class="panel-head">
+              <div><span class="muted">Rekap</span><h3>Ringkasan Penilaian</h3></div>
+            </div>
+            <div id="gradeSummaryBox" class="monthly-summary"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <div><span class="muted">Penilaian</span><h3>Daftar Penilaian</h3></div>
+            </div>
+            <div id="assessmentList" class="history-list"></div>
+          </article>
+        </div>
+      </section>
+      <section id="homeroom" class="page premium-module homeroom-premium">
+        <div class="page-actions">
+          <div>
+            <p class="muted">Administrasi dan pemantauan wali kelas</p>
+            <h2>Wali Kelas</h2>
+          </div>
+          <div class="homeroom-head-actions">
+            <select id="homeroomClassFilter" class="input compact-input">
+              <option value="">Semua Kelas</option>
+            </select>
+            <button id="openLegerBtn" class="btn btn-secondary">Lihat Leger</button>
+          </div>
+        </div>
+
+        <div class="homeroom-summary-grid">
+          <article class="mini-stat homeroom-blue"><span>👥</span><div><small>Total Siswa</small><strong id="homeTotalStudents">0</strong></div></article>
+          <article class="mini-stat homeroom-green"><span>✓</span><div><small>Aktif</small><strong id="homeActiveStudents">0</strong></div></article>
+          <article class="mini-stat homeroom-orange"><span>!</span><div><small>Perlu Perhatian</small><strong id="homeAttentionStudents">0</strong></div></article>
+          <article class="mini-stat homeroom-purple"><span>▤</span><div><small>Catatan Wali</small><strong id="homeNotesCount">0</strong></div></article>
+        </div>
+
+        <div class="panel">
+          <div class="homeroom-toolbar">
+            <div>
+              <h3>Rekap Siswa Wali Kelas</h3>
+              <p class="muted">Pantau kehadiran, nilai, catatan, dan status siswa dalam satu halaman.</p>
+            </div>
+            <input id="homeroomSearch" class="input homeroom-search" placeholder="Cari nama atau NIS...">
+          </div>
+
+          <div id="homeroomEmpty" class="empty-state">
+            <div class="empty-icon">🏫</div>
+            <h3>Belum ada data siswa</h3>
+            <p>Tambahkan siswa terlebih dahulu dari menu Data Siswa.</p>
+            <button class="btn btn-primary" data-go="students">Kelola Data Siswa</button>
+          </div>
+
+          <div class="table-wrap" id="homeroomTableWrap">
+            <table class="homeroom-table">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Nama</th>
+                  <th>NIS</th>
+                  <th>Kelas</th>
+                  <th>Kehadiran</th>
+                  <th>Rata-rata Nilai</th>
+                  <th>Catatan</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="homeroomTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="section-grid homeroom-bottom-grid">
+          <article class="panel">
+            <div class="panel-head">
+              <div><span class="muted">Pemantauan</span><h3>Siswa Perlu Perhatian</h3></div>
+            </div>
+            <div id="homeroomAttentionList" class="history-list"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <div><span class="muted">Terbaru</span><h3>Catatan Wali Kelas</h3></div>
+            </div>
+            <div id="homeroomRecentNotes" class="history-list"></div>
+          </article>
+        </div>
+      </section>
+      <section id="reports" class="page premium-module reports-premium">
+        <div class="page-actions">
+          <div>
+            <p class="muted">Rekap, cetak, dan ekspor administrasi</p>
+            <h2>Laporan & Cetak</h2>
+          </div>
+          <div class="report-top-actions">
+            <button id="printReportBtn" class="btn btn-primary">🖨 Cetak / PDF</button>
+            <button id="exportExcelBtn" class="btn btn-secondary">⇩ Excel</button>
+          </div>
+        </div>
+
+        <div class="panel report-filter-panel"><div class="report-filter-title"><span>⚙</span><div><strong>Filter Laporan</strong><small>Pilih jenis data yang akan ditampilkan atau dicetak.</small></div></div>
+          <div class="report-filter-grid">
+            <label>Jenis Laporan
+              <select id="reportType" class="input">
+                <option value="students">Daftar Siswa</option>
+                <option value="attendance">Rekap Absensi</option>
+                <option value="journal">Jurnal Mengajar</option>
+                <option value="grades">Daftar Nilai</option>
+                <option value="homeroom">Leger Wali Kelas</option>
+              </select>
+            </label>
+
+            <label>Kelas
+              <select id="reportClass" class="input">
+                <option value="">Semua Kelas</option>
+              </select>
+            </label>
+
+            <label id="reportMonthWrap">Bulan
+              <input id="reportMonth" type="month" class="input">
+            </label>
+
+            <label id="reportAssessmentWrap" class="hidden">Penilaian
+              <select id="reportAssessment" class="input">
+                <option value="">Pilih penilaian...</option>
+              </select>
+            </label>
+
+            <div class="report-filter-action">
+              <button id="refreshReportBtn" class="btn btn-secondary">Tampilkan</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="reportPaper" class="report-paper">
+          <div id="reportHeader" class="report-header"></div>
+          <div id="reportMeta" class="report-meta"></div>
+          <div id="reportContent" class="report-content"></div>
+          <div id="reportSignature" class="report-signature"></div>
+          <div id="reportFooter" class="report-footer"></div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav mobile-main-nav" aria-label="Navigasi utama mobile">
+      <button class="bottom-item active" data-page="dashboard"><span><img class="bottom-icon" src="assets/ui/home.png" alt=""></span><small>Beranda</small></button>
+      <button class="bottom-item" data-page="attendance"><span><img class="bottom-icon" src="assets/ui/attendance.png" alt=""></span><small>Absen</small></button>
+      <button class="bottom-item" data-page="journal"><span><img class="bottom-icon" src="assets/ui/journal.png" alt=""></span><small>Jurnal</small></button>
+      <button class="bottom-item" data-page="grades"><span><img class="bottom-icon" src="assets/ui/grades.png" alt=""></span><small>Nilai</small></button>
+      <button id="mobileMoreBtn" class="bottom-item mobile-more-btn" type="button"><span>☰</span><small>Menu</small></button>
+    </nav>
+
+    <div id="mobileMoreBackdrop" class="mobile-more-backdrop hidden" aria-hidden="true"></div>
+    <section id="mobileMoreSheet" class="mobile-more-sheet hidden" aria-hidden="true">
+      <div class="mobile-sheet-handle"></div>
+      <div class="mobile-sheet-head">
+        <div>
+          <span>SIAGA GURU Mobile</span>
+          <h3>Menu Lainnya</h3>
+        </div>
+        <button id="mobileMoreClose" class="icon-btn" type="button" aria-label="Tutup menu">×</button>
+      </div>
+      <div class="mobile-sheet-grid">
+        <button type="button" data-page="students"><img src="assets/ui/students.png" alt=""><span>Data Siswa</span><small>Kelola peserta didik</small></button>
+        <button type="button" data-page="homeroom"><img src="assets/ui/homeroom.png" alt=""><span>Wali Kelas</span><small>Pantau siswa</small></button>
+        <button type="button" data-page="reports"><img src="assets/ui/reports.png" alt=""><span>Laporan</span><small>Rekap & cetak</small></button>
+        <button type="button" data-page="backup"><img src="assets/ui/backup.png" alt=""><span>Backup</span><small>Amankan data</small></button>
+        <button type="button" data-page="settings"><img src="assets/ui/settings.png" alt=""><span>Pengaturan</span><small>Profil & Cloud</small></button>
+      </div>
+      <div class="mobile-sheet-note">
+        <b>Offline-first</b>
+        <span>Data tetap dapat digunakan tanpa internet. Aktifkan Cloud di Pengaturan untuk sinkron PC ↔ HP.</span>
+      </div>
+    </section>
+  </div>
+
+  <dialog id="studentDialog" class="dialog">
+    <form method="dialog" id="studentForm" class="dialog-card">
+      <div class="dialog-head"><h3 id="studentDialogTitle">Tambah Siswa</h3><button class="icon-btn" value="cancel">×</button></div>
+      <input type="hidden" name="id">
+      <label>Nama Siswa<input class="input" name="name" required></label>
+      <label>NIS<input class="input" name="nis"></label>
+      <label>Jenis Kelamin
+        <select class="input" name="gender"><option value="">- Pilih -</option><option>L</option><option>P</option></select>
+      </label>
+      <label>Kelas<input class="input" name="className"></label>
+      <div class="actions-row">
+        <button class="btn btn-secondary" value="cancel">Batal</button>
+        <button class="btn btn-primary" id="saveStudentBtn" value="default">Simpan</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="bulkDialog" class="dialog">
+    <form method="dialog" id="bulkForm" class="dialog-card">
+      <div class="dialog-head"><h3>Input Banyak Siswa</h3><button class="icon-btn" value="cancel">×</button></div>
+      <p class="muted">Tempel satu nama per baris. Format opsional: <b>Nama | NIS | L/P | Kelas</b></p>
+      <textarea id="bulkText" class="input textarea" placeholder="Ahmad Fauzan | 001 | L | X AKL&#10;Siti Aisyah | 002 | P | X AKL"></textarea>
+      <div class="actions-row">
+        <button class="btn btn-secondary" value="cancel">Batal</button>
+        <button class="btn btn-primary" id="bulkSaveBtn" value="default">Tambahkan</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="journalDialog" class="dialog">
+    <form method="dialog" id="journalForm" class="dialog-card journal-dialog-card">
+      <div class="dialog-head">
+        <div>
+          <p class="muted">Jurnal Pembelajaran</p>
+          <h3 id="journalDialogTitle">Tambah Jurnal</h3>
+        </div>
+        <button class="icon-btn" value="cancel" aria-label="Tutup">×</button>
+      </div>
+
+      <input type="hidden" name="id">
+
+      <div class="journal-form-grid">
+        <label>Tanggal
+          <input class="input" type="date" name="date" required>
+        </label>
+        <label>Kelas
+          <input class="input" name="className" placeholder="Contoh: X AKL" required>
+        </label>
+
+        <label>Mata Pelajaran
+          <input class="input" name="subject" placeholder="Contoh: Pendidikan Agama Islam" required>
+        </label>
+        <label>Jam Pelajaran (JP)
+          <input class="input" type="number" name="jp" min="1" max="12" value="2" required>
+        </label>
+
+        <label class="form-span">Materi / Topik
+          <input class="input" name="topic" placeholder="Materi yang dipelajari" required>
+        </label>
+
+        <label class="form-span">Tujuan Pembelajaran
+          <textarea class="input journal-textarea" name="objective" placeholder="Tuliskan tujuan pembelajaran..."></textarea>
+        </label>
+
+        <label>Metode / Model
+          <input class="input" name="method" placeholder="Diskusi, PBL, demonstrasi...">
+        </label>
+        <label>Status
+          <select class="input" name="status">
+            <option value="Terlaksana">Terlaksana</option>
+            <option value="Sebagian">Sebagian</option>
+            <option value="Tertunda">Tertunda</option>
+          </select>
+        </label>
+
+        <label class="form-span">Catatan / Refleksi
+          <textarea class="input journal-textarea" name="notes" placeholder="Catatan proses belajar, kendala, tindak lanjut..."></textarea>
+        </label>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn btn-secondary" value="cancel">Batal</button>
+        <button class="btn btn-primary" id="saveJournalBtn" value="default">Simpan Jurnal</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="assessmentDialog" class="dialog">
+    <form method="dialog" id="assessmentForm" class="dialog-card">
+      <div class="dialog-head">
+        <div>
+          <p class="muted">Konfigurasi Penilaian</p>
+          <h3 id="assessmentDialogTitle">Buat Penilaian</h3>
+        </div>
+        <button class="icon-btn" value="cancel" aria-label="Tutup">×</button>
+      </div>
+
+      <input type="hidden" name="id">
+      <div class="journal-form-grid">
+        <label>Nama Penilaian
+          <input class="input" name="name" placeholder="Contoh: Formatif Bab 1" required>
+        </label>
+        <label>Jenis
+          <select class="input" name="type" required>
+            <option value="Formatif">Formatif</option>
+            <option value="Sumatif">Sumatif</option>
+            <option value="Tugas">Tugas</option>
+            <option value="PTS/STS">PTS/STS</option>
+            <option value="PAS/SAS">PAS/SAS</option>
+            <option value="Praktik">Praktik</option>
+            <option value="Proyek">Proyek</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+        </label>
+
+        <label>Kelas
+          <input class="input" name="className" placeholder="Contoh: X AKL">
+        </label>
+        <label>Mata Pelajaran
+          <input class="input" name="subject" placeholder="Contoh: Pendidikan Agama Islam">
+        </label>
+
+        <label>Tanggal
+          <input class="input" type="date" name="date" required>
+        </label>
+        <label>KKTP / KKM
+          <input class="input" type="number" name="kkm" min="0" max="100" value="75" required>
+        </label>
+
+        <label class="form-span">Keterangan
+          <textarea class="input journal-textarea" name="notes" placeholder="Opsional: materi, bab, atau catatan penilaian"></textarea>
+        </label>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn btn-secondary" value="cancel">Batal</button>
+        <button class="btn btn-primary" id="saveAssessmentBtn" value="default">Simpan Penilaian</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="homeroomDialog" class="dialog">
+    <form method="dialog" id="homeroomForm" class="dialog-card homeroom-dialog-card">
+      <div class="dialog-head">
+        <div>
+          <p class="muted">Data Wali Kelas</p>
+          <h3 id="homeroomDialogTitle">Detail Siswa</h3>
+        </div>
+        <button class="icon-btn" value="cancel" aria-label="Tutup">×</button>
+      </div>
+
+      <input type="hidden" name="studentId">
+
+      <div id="homeroomStudentSummary" class="student-summary-box"></div>
+
+      <div class="journal-form-grid">
+        <label>Nama Orang Tua / Wali
+          <input class="input" name="parentName" placeholder="Nama orang tua/wali">
+        </label>
+        <label>No. HP Orang Tua / Wali
+          <input class="input" name="parentPhone" placeholder="08xxxxxxxxxx">
+        </label>
+
+        <label class="form-span">Alamat
+          <textarea class="input journal-textarea" name="address" placeholder="Alamat siswa"></textarea>
+        </label>
+
+        <label>Status Siswa
+          <select class="input" name="status">
+            <option value="Aktif">Aktif</option>
+            <option value="Pindah">Pindah</option>
+            <option value="Keluar">Keluar</option>
+            <option value="Lulus">Lulus</option>
+          </select>
+        </label>
+        <label>Tanggal Mutasi / Perubahan Status
+          <input class="input" type="date" name="mutationDate">
+        </label>
+
+        <label class="form-span">Keterangan Mutasi / Status
+          <textarea class="input journal-textarea" name="mutationNote" placeholder="Opsional"></textarea>
+        </label>
+      </div>
+
+      <div class="homeroom-note-box">
+        <div class="panel-head">
+          <div><span class="muted">Catatan perkembangan</span><h3>Tambah Catatan Wali Kelas</h3></div>
+        </div>
+        <div class="journal-form-grid">
+          <label>Tanggal
+            <input class="input" type="date" id="homeroomNoteDate">
+          </label>
+          <label>Kategori
+            <select class="input" id="homeroomNoteCategory">
+              <option value="Akademik">Akademik</option>
+              <option value="Kehadiran">Kehadiran</option>
+              <option value="Sikap">Sikap</option>
+              <option value="Prestasi">Prestasi</option>
+              <option value="Komunikasi Orang Tua">Komunikasi Orang Tua</option>
+              <option value="Lainnya">Lainnya</option>
+            </select>
+          </label>
+          <label class="form-span">Isi Catatan
+            <textarea class="input journal-textarea" id="homeroomNoteText" placeholder="Tuliskan catatan singkat dan objektif..."></textarea>
+          </label>
+        </div>
+        <div class="actions-row homeroom-note-actions">
+          <button type="button" class="btn btn-secondary" id="addHomeroomNoteBtn">+ Tambah Catatan</button>
+        </div>
+        <div id="studentHomeroomNotes" class="student-note-list"></div>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn btn-secondary" value="cancel">Tutup</button>
+        <button class="btn btn-primary" id="saveHomeroomBtn" value="default">Simpan Data Wali</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="legerDialog" class="dialog">
+    <div class="dialog-card leger-dialog-card">
+      <div class="dialog-head">
+        <div>
+          <p class="muted">Rekap Wali Kelas</p>
+          <h3>Leger Kelas</h3>
+        </div>
+        <button class="icon-btn" id="closeLegerBtn" aria-label="Tutup">×</button>
+      </div>
+      <div class="table-wrap">
+        <table class="leger-table">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Nama</th>
+              <th>Kelas</th>
+              <th>H</th>
+              <th>S</th>
+              <th>I</th>
+              <th>A</th>
+              <th>T</th>
+              <th>Rata-rata</th>
+              <th>Tuntas</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="legerTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="importStudentDialog" class="dialog">
+    <div class="dialog-card import-dialog-card">
+      <div class="dialog-head">
+        <div><p class="muted">Import Data Siswa</p><h3>Import Excel / CSV</h3></div>
+        <button class="icon-btn" id="closeImportStudentBtn" aria-label="Tutup">×</button>
+      </div>
+      <div class="import-dropzone" id="studentImportDropzone">
+        <div class="import-icon">⇧</div><strong>Pilih file Excel atau CSV</strong>
+        <p>.xlsx dan .csv • Maksimal disarankan 2.000 siswa</p>
+        <input id="studentImportFile" type="file" accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="input">
+      </div>
+      <div class="import-help"><strong>Kolom dikenali otomatis:</strong><span>Nama / Nama Siswa</span><span>NIS / NISN</span><span>JK / Jenis Kelamin</span><span>Kelas / Rombel</span></div>
+      <div id="importMappingWrap" class="hidden">
+        <div class="panel-head"><div><span class="muted">Pemetaan kolom</span><h3>Cocokkan data file</h3></div></div>
+        <div class="import-mapping-grid">
+          <label>Nama Siswa<select id="mapName" class="input"></select></label>
+          <label>NIS / NISN<select id="mapNis" class="input"></select></label>
+          <label>Jenis Kelamin<select id="mapGender" class="input"></select></label>
+          <label>Kelas<select id="mapClass" class="input"></select></label>
+        </div>
+        <div class="import-options">
+          <label>Kelas default jika kosong<input id="importDefaultClass" class="input" placeholder="Contoh: X AKL"></label>
+          <label>Jika ada duplikat NIS<select id="importDuplicateMode" class="input"><option value="skip">Lewati duplikat</option><option value="update">Perbarui data lama</option></select></label>
+        </div>
+      </div>
+      <div id="importPreviewWrap" class="hidden">
+        <div class="import-summary-grid">
+          <div><span>Baris Dibaca</span><strong id="importRowsRead">0</strong></div>
+          <div><span>Siap Import</span><strong id="importRowsValid">0</strong></div>
+          <div><span>Duplikat</span><strong id="importRowsDuplicate">0</strong></div>
+          <div><span>Bermasalah</span><strong id="importRowsInvalid">0</strong></div>
+        </div>
+        <div class="table-wrap import-preview-table"><table><thead><tr><th>No</th><th>Nama</th><th>NIS</th><th>JK</th><th>Kelas</th><th>Status</th></tr></thead><tbody id="importPreviewBody"></tbody></table></div>
+      </div>
+      <div id="importError" class="import-error hidden"></div>
+      <div class="actions-row"><button class="btn btn-secondary" id="cancelImportStudentBtn">Batal</button><button class="btn btn-primary" id="executeImportStudentBtn" disabled>Import Siswa</button></div>
+    </div>
+  </dialog>
+
+
+  <dialog id="bulkManageStudentDialog" class="dialog">
+    <form method="dialog" id="bulkManageStudentForm" class="dialog-card bulk-manage-dialog">
+      <div class="dialog-head">
+        <div><p class="muted">Kenaikan kelas & mutasi</p><h3>Kelola Siswa Terpilih</h3></div>
+        <button class="icon-btn" value="cancel" aria-label="Tutup">×</button>
+      </div>
+      <div class="bulk-selected-info"><strong id="bulkSelectedInfo">0 siswa dipilih</strong><span id="bulkPeriodInfo">Periode aktif</span></div>
+      <label>Aksi
+        <select id="bulkStudentAction" class="input">
+          <option value="move_class">Pindahkan / Naikkan Kelas</option>
+          <option value="active">Set Status Aktif</option>
+          <option value="pindah">Set Status Pindah</option>
+          <option value="keluar">Set Status Keluar</option>
+          <option value="lulus">Set Status Lulus</option>
+        </select>
+      </label>
+      <label id="bulkTargetClassWrap">Kelas Tujuan
+        <input id="bulkTargetClass" class="input" placeholder="Contoh: XII TKJ 1">
+      </label>
+      <label>Keterangan
+        <textarea id="bulkMutationNote" class="input journal-textarea" placeholder="Opsional: naik kelas, pindah sekolah, lulus, dll."></textarea>
+      </label>
+      <div class="safe-action-note">Perubahan kelas berlaku hanya pada <strong>periode aktif</strong>, sehingga kelas pada periode lama tetap tersimpan.</div>
+      <div class="actions-row">
+        <button class="btn btn-secondary" value="cancel">Batal</button>
+        <button id="executeBulkStudentBtn" class="btn btn-primary" value="default">Terapkan</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="onboardingDialog" class="dialog onboarding-dialog">
+    <div class="dialog-card onboarding-card">
+      <div class="onboarding-brand">
+        <img src="assets/icons/icon-192.png" alt="SIAGA GURU">
+        <div><span>Selamat Datang di</span><strong>SIAGA GURU</strong><small>Administrasi Guru Digital • Gratis • Offline</small></div>
+      </div>
+
+      <div class="onboarding-progress"><span class="active" data-ob-dot="1"></span><span data-ob-dot="2"></span><span data-ob-dot="3"></span></div>
+
+      <section class="onboarding-step active" data-ob-step="1">
+        <h2>Mulai dalam beberapa langkah</h2>
+        <p>SIAGA GURU menyimpan data di perangkat Anda dan dapat digunakan tanpa biaya hosting. Isi identitas dasar agar aplikasi langsung siap dipakai.</p>
+        <div class="onboarding-benefits">
+          <div>✓ Data siswa & absensi</div><div>✓ Jurnal & nilai</div><div>✓ Wali kelas & laporan</div><div>✓ Backup mandiri</div>
+        </div>
+      </section>
+
+      <section class="onboarding-step" data-ob-step="2">
+        <h2>Profil Dasar</h2>
+        <div class="journal-form-grid">
+          <label>Nama Sekolah<input id="obSchool" class="input" placeholder="Nama sekolah"></label>
+          <label>Nama Guru<input id="obTeacher" class="input" placeholder="Nama lengkap dan gelar"></label>
+          <label>Mata Pelajaran<input id="obSubject" class="input" placeholder="Contoh: Pendidikan Agama Islam"></label>
+          <label>Kelas Utama<input id="obClass" class="input" placeholder="Contoh: X AKL"></label>
+        </div>
+      </section>
+
+      <section class="onboarding-step" data-ob-step="3">
+        <h2>Periode Akademik</h2>
+        <div class="journal-form-grid">
+          <label>Tahun Ajaran<input id="obYear" class="input" placeholder="2026/2027"></label>
+          <label>Semester<select id="obSemester" class="input"><option>Ganjil</option><option>Genap</option></select></label>
+        </div>
+        <div class="onboarding-final-note">Setelah selesai, Anda dapat mengimpor siswa dari Excel/CSV atau menambahkannya secara manual.</div>
+      </section>
+
+      <div class="onboarding-actions">
+        <button id="skipOnboardingBtn" class="btn btn-secondary" type="button">Lewati</button>
+        <div>
+          <button id="onboardingPrevBtn" class="btn btn-secondary hidden" type="button">Kembali</button>
+          <button id="onboardingNextBtn" class="btn btn-primary" type="button">Mulai</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="helpDialog" class="dialog">
+    <div class="dialog-card help-dialog-card">
+      <div class="dialog-head">
+        <div><p class="muted">Pusat Bantuan</p><h3>SIAGA GURU Mobile 1.0</h3></div>
+        <button id="closeHelpBtn" class="icon-btn" aria-label="Tutup">×</button>
+      </div>
+      <div class="help-grid">
+        <button class="help-card" data-help-go="settings"><b>1</b><span>Lengkapi Profil</span><small>Isi sekolah, guru, periode, kelas dan mapel.</small></button>
+        <button class="help-card" data-help-go="students"><b>2</b><span>Masukkan Siswa</span><small>Tambah manual, massal, atau import Excel/CSV.</small></button>
+        <button class="help-card" data-help-go="attendance"><b>3</b><span>Gunakan Harian</span><small>Isi absensi dan jurnal pembelajaran.</small></button>
+        <button class="help-card" data-help-go="backup"><b>4</b><span>Backup Berkala</span><small>Simpan backup JSON di tempat aman.</small></button>
+      </div>
+      <div class="help-note"><strong>Penting:</strong> data tersimpan pada browser/perangkat. Menghapus data browser dapat menghapus data SIAGA GURU. Lakukan backup secara rutin.</div>
+    </div>
+  </dialog>
+
+
+  <dialog id="aboutDialog" class="dialog">
+    <div class="dialog-card about-dialog-card">
+      <div class="dialog-head">
+        <div><p class="muted">Tentang Aplikasi</p><h3>SIAGA GURU Mobile 1.0</h3></div>
+        <button id="closeAboutBtn" class="icon-btn" aria-label="Tutup">×</button>
+      </div>
+      <div class="about-hero">
+        <img src="assets/icons/icon-192.png" alt="Logo SIAGA GURU">
+        <div><span>SIAGA GURU</span><strong>Administrasi guru, lebih tenang.</strong><small>Mobile 1.0 • Core v3.9</small></div>
+      </div>
+      <div class="about-value-grid">
+        <div><b>✓</b><span><strong>Gratis</strong><small>Tanpa biaya langganan.</small></span></div>
+        <div><b>✓</b><span><strong>Offline-first</strong><small>Tetap dapat digunakan tanpa internet.</small></span></div>
+        <div><b>✓</b><span><strong>Tanpa iklan</strong><small>Fokus pada pekerjaan guru.</small></span></div>
+        <div><b>✓</b><span><strong>Data milik guru</strong><small>Data lokal tetap berada di perangkat.</small></span></div>
+      </div>
+      <div class="about-note">
+        <strong>Dibuat untuk membantu administrasi guru.</strong>
+        <p>Absensi, jurnal, nilai, wali kelas, laporan, backup, dan ruang kerja multi-guru dalam satu aplikasi yang ringan. Sinkronisasi Cloud bersifat opsional.</p>
+      </div>
+      <div class="about-privacy">
+        <span>🔒 Privasi</span>
+        <p>Gunakan fitur Backup secara berkala. Menghapus data aplikasi/browser dapat menghapus data lokal jika belum dicadangkan.</p>
+      </div>
+      <div class="actions-row"><button id="aboutCloseActionBtn" class="btn btn-primary" type="button">Tutup</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="appLockDialog" class="dialog lock-dialog">
+    <div class="lock-card">
+      <img src="assets/icons/icon-192.png" alt="SIAGA GURU">
+      <h2>SIAGA GURU Terkunci</h2>
+      <p>Masukkan PIN lokal untuk membuka aplikasi.</p>
+      <input id="unlockPinInput" class="input pin-input unlock-pin" type="password" inputmode="numeric" maxlength="8" placeholder="PIN">
+      <button id="unlockAppBtn" class="btn btn-primary" type="button">Buka Aplikasi</button>
+      <small>PIN ini bukan enkripsi data.</small>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast"></div>
+  <script src="js/app.js"></script>
+</body>
+</html>
