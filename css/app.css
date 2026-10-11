@@ -6845,3 +6845,95 @@ body{
   .cloud-conflict-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;width:100%}
   .cloud-conflict-actions .btn{width:100%;padding-left:8px;padding-right:8px;font-size:8px}
 }
+
+
+/* ===================================================================
+   SIAGA GURU MOBILE 1.1.1 — CONNECTION FEEDBACK FIX
+   =================================================================== */
+.cloud-test-result{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  margin:12px 0 4px;
+  padding:12px 13px;
+  border-radius:15px;
+  border:1px solid #dde6f1;
+  background:#f8fbff;
+  color:#53657f;
+}
+.cloud-test-result-icon{
+  flex:none;
+  width:24px;height:24px;
+  display:grid;place-items:center;
+  border-radius:50%;
+  font-size:10px;
+  background:#eaf0f7;
+  color:#8291a6;
+}
+.cloud-test-result strong{
+  display:block;
+  color:#2a3d5d;
+  font-size:11px;
+}
+.cloud-test-result small{
+  display:block;
+  margin-top:3px;
+  color:#71829a;
+  font-size:9px;
+  line-height:1.45;
+}
+.cloud-test-result.testing{
+  background:#eef6ff;
+  border-color:#cfe2fb;
+}
+.cloud-test-result.testing .cloud-test-result-icon{
+  background:#dcecff;
+  color:#2473d5;
+  animation:siagaPulse 1s ease-in-out infinite;
+}
+.cloud-test-result.success{
+  background:#effbf5;
+  border-color:#ccebdc;
+}
+.cloud-test-result.success .cloud-test-result-icon{
+  background:#d7f5e5;
+  color:#11905b;
+}
+.cloud-test-result.success strong{color:#14744d}
+.cloud-test-result.error{
+  background:#fff3f4;
+  border-color:#f0ced2;
+}
+.cloud-test-result.error .cloud-test-result-icon{
+  background:#ffe0e3;
+  color:#ca3f4f;
+}
+.cloud-test-result.error strong{color:#a82f3e}
+
+@keyframes siagaPulse{
+  0%,100%{transform:scale(.88);opacity:.65}
+  50%{transform:scale(1.08);opacity:1}
+}
+
+@media(max-width:899px){
+  /* Toast sebelumnya berada di belakang bottom navigation (z-index 100 vs nav 120). */
+  .toast{
+    z-index:500!important;
+    left:14px!important;
+    right:14px!important;
+    bottom:calc(98px + env(safe-area-inset-bottom))!important;
+    width:auto!important;
+    text-align:center!important;
+    padding:12px 14px!important;
+    border-radius:15px!important;
+    font-size:10px!important;
+    line-height:1.4!important;
+    box-shadow:0 16px 40px rgba(20,46,87,.22)!important;
+  }
+  .cloud-test-result{
+    margin-top:10px;
+    padding:11px 12px;
+  }
+  .cloud-test-result strong{font-size:10.5px}
+  .cloud-test-result small{font-size:8.5px}
+}

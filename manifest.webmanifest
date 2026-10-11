@@ -1,12 +1,12 @@
 {
-  "name": "SIAGA GURU Mobile 1.1",
+  "name": "SIAGA GURU Mobile 1.1.1",
   "short_name": "SIAGA GURU",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#eef5ff",
   "theme_color": "#1d63f0",
-  "description": "SIAGA GURU dengan sinkron otomatis aman antara Desktop dan Mobile, tetap offline-first.",
+  "description": "SIAGA GURU Mobile dengan sinkronisasi cloud dan feedback uji koneksi yang jelas.",
   "icons": [
     {
       "src": "assets/icons/icon-192.png",

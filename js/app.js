@@ -278,13 +278,42 @@ async function testCloudConnection(){
   const url=normalizeSupabaseUrl(document.getElementById('cloudSupabaseUrl')?.value||cfg.supabaseUrl);
   const key=String(document.getElementById('cloudSupabaseAnonKey')?.value||cfg.anonKey||'').trim();
   if(!url||!key) throw new Error('Project URL dan anon/publishable key harus diisi.');
-  const controller=new AbortController(); const timer=setTimeout(()=>controller.abort(),8000);
+
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),10000);
+
   try{
-    const res=await fetch(`${url}/rest/v1/`,{method:'GET',headers:{apikey:key,Authorization:`Bearer ${key}`},signal:controller.signal});
-    if(!res.ok) throw new Error(`Supabase merespons HTTP ${res.status}`);
-    await saveCloudConfig({supabaseUrl:url,anonKey:key,schoolCode:String(document.getElementById('cloudSchoolCode')?.value||cfg.schoolCode||'').trim(),connectionState:'connected'});
+    const headers={apikey:key};
+    // Legacy anon keys are JWTs (eyJ...). New sb_publishable_ keys should not
+    // be sent as the user's Bearer token.
+    if(key.startsWith('eyJ')) headers.Authorization=`Bearer ${key}`;
+
+    const res=await fetch(`${url}/rest/v1/`,{
+      method:'GET',
+      headers,
+      signal:controller.signal,
+      cache:'no-store'
+    });
+
+    if(!res.ok){
+      let detail='';
+      try{
+        const body=await res.text();
+        detail=body?` • ${body.slice(0,140)}`:'';
+      }catch(_){}
+      throw new Error(`Supabase merespons HTTP ${res.status}${detail}`);
+    }
+
+    await saveCloudConfig({
+      supabaseUrl:url,
+      anonKey:key,
+      schoolCode:String(document.getElementById('cloudSchoolCode')?.value||cfg.schoolCode||'').trim(),
+      connectionState:'connected'
+    });
     return true;
-  }finally{clearTimeout(timer)}
+  }finally{
+    clearTimeout(timer);
+  }
 }
 async function renderCloudStatus(){
   const chip=document.getElementById('cloudSyncChip'); const badge=document.getElementById('cloudStatusBadge');
@@ -512,8 +541,14 @@ async function cloudAutoSync(trigger='auto'){
 
 
 function showToast(msg){
-  const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),2500);
+  const el=document.getElementById('toast');
+  if(!el) return;
+  el.textContent=msg;
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
+  clearTimeout(window.__siagaToastTimer);
+  window.__siagaToastTimer=setTimeout(()=>el.classList.remove('show'),3200);
 }
 
 function navigate(page){
@@ -3568,7 +3603,47 @@ document.getElementById('saveCloudConfigBtn')?.addEventListener('click',async()=
   try{const current=await getCloudConfig();await saveCloudConfig({mode:'cloud',supabaseUrl:normalizeSupabaseUrl(document.getElementById('cloudSupabaseUrl').value),anonKey:document.getElementById('cloudSupabaseAnonKey').value.trim(),schoolCode:document.getElementById('cloudSchoolCode').value.trim(),deviceId:current.deviceId||makeCloudId(),connectionState:'idle'});showToast('Konfigurasi cloud disimpan')}catch(err){showToast(err.message||'Gagal menyimpan konfigurasi')}
 });
 document.getElementById('testCloudConnectionBtn')?.addEventListener('click',async()=>{
-  const btn=document.getElementById('testCloudConnectionBtn');try{btn.disabled=true;btn.textContent='Menguji...';await testCloudConnection();showToast('Koneksi Supabase berhasil')}catch(err){try{await saveCloudConfig({connectionState:'error'})}catch(_){}showToast(err.name==='AbortError'?'Koneksi Supabase timeout':(err.message||'Koneksi Supabase gagal'))}finally{btn.disabled=false;btn.textContent='Uji Koneksi';await renderCloudStatus()}
+  const btn=document.getElementById('testCloudConnectionBtn');
+  const box=document.getElementById('cloudTestResult');
+  const title=document.getElementById('cloudTestResultTitle');
+  const detail=document.getElementById('cloudTestResultDetail');
+
+  const setTestState=(state,headline,message)=>{
+    if(box){
+      box.classList.remove('idle','testing','success','error');
+      box.classList.add(state);
+    }
+    if(title) title.textContent=headline;
+    if(detail) detail.textContent=message;
+  };
+
+  try{
+    btn.disabled=true;
+    btn.textContent='Menguji...';
+    setTestState('testing','Sedang menguji koneksi…','Menghubungi Supabase. Mohon tunggu beberapa detik.');
+
+    await testCloudConnection();
+
+    setTestState(
+      'success',
+      '✓ Koneksi Supabase berhasil',
+      'Project URL dan Publishable Key dapat digunakan. Lanjutkan ke login/daftar Akun Cloud.'
+    );
+    btn.textContent='✓ Terhubung';
+    showToast('Koneksi Supabase berhasil');
+  }catch(err){
+    try{await saveCloudConfig({connectionState:'error'})}catch(_){}
+    const msg=err.name==='AbortError'
+      ? 'Koneksi timeout. Periksa internet dan Project URL.'
+      : (err.message||'Koneksi Supabase gagal');
+
+    setTestState('error','✕ Koneksi belum berhasil',msg);
+    btn.textContent='Coba Lagi';
+    showToast(msg);
+  }finally{
+    btn.disabled=false;
+    await renderCloudStatus();
+  }
 });
 document.getElementById('prepareCloudDataBtn')?.addEventListener('click',async()=>{
   const btn=document.getElementById('prepareCloudDataBtn');try{btn.disabled=true;btn.textContent='Menyiapkan...';await prepareCloudData();showToast('Data lokal sudah diberi ID Cloud dan masuk antrean sinkronisasi')}catch(err){showToast(err.message||'Gagal menyiapkan data cloud')}finally{btn.disabled=false;btn.textContent='Siapkan Data Cloud';await renderCloudStatus()}
